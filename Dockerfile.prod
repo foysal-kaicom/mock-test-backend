@@ -1,0 +1,43 @@
+# Base image
+FROM php:8.3-fpm AS backend
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    unzip \
+    zip \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libonig-dev \
+    libxml2-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libjpeg-dev \
+    libpng-dev \
+    ghostscript \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy composer files first for caching
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies (production only)
+# RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+# Copy application files
+COPY . .
+
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
+
+EXPOSE 9000
+CMD ["php-fpm"]
