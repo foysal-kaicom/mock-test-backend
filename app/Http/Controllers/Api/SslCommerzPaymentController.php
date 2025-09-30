@@ -29,9 +29,11 @@ class SslCommerzPaymentController extends Controller
         $post_data['currency'] = "BDT";
         if($bookingData->title == 'subscription'){
             $post_data['tran_id'] = $bookingData->tran_id;
+            $post_data['title'] = 'subscription';
         }
         else{
             $post_data['tran_id'] = $bookingData->id; // tran_id must be unique
+            $post_data['title'] = 'booking';
         }
         // $post_data['tran_id'] = $bookingData->id; // tran_id must be unique
 
@@ -92,25 +94,31 @@ class SslCommerzPaymentController extends Controller
         $amount = $request->input('amount');
         $currency = $request->input('currency');
         $title = $request->input('title');
-
+        // dd($request->all());
         $sslc = new SslCommerzNotification();
 
         #Check order status in order tabel against the transaction id or order id.
 
         if($title == 'subscription'){
-            $bookingData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+            $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+            // dd($bookingData);
+            //  dd($bookingData->id);
         }
         else{
-            $bookingData = Booking::find($tran_id);
+            // $bookingData = UserSubscription::find($tran_id);
+            $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+            // dd($bookingData);
         }
 
-        $successPath = str_replace('{booking_id}', $bookingData->id, config('app.frontend.payment_success'));
-        $failedPath  = str_replace('{booking_id}', $bookingData->id, config('app.frontend.payment_failed'));
+        // $successPath = str_replace('{booking_id}', $bookingData->id, config('app.frontend.payment_success') );
+        $successPath = config('app.frontend.payment_success') . '?subscription_id=' . $subscriptionData->id . '&amount=' . $subscriptionData->total_payable . '&tran_id=' . $subscriptionData->tran_id;
+        // dd($successPath);
+        $failedPath  = str_replace('{booking_id}', $subscriptionData->id, config('app.frontend.payment_failed'));
         $baseUrl     = config('app.frontend.url');
 
-        $this->paymentTrack($bookingData, $request->all());
+        $this->paymentTrack($subscriptionData, $request->all());
 
-        if ($bookingData->payment_status == 'pending') {
+        if ($subscriptionData->payment_status == 'pending') {
             $validation = $sslc->orderValidate($request->all(), $tran_id, $amount, $currency);
 
             if ($validation) {
@@ -119,7 +127,7 @@ class SslCommerzPaymentController extends Controller
                 in order table as Processing or Complete.
                 Here you can also sent sms or email for successfull transaction to customer
                 */
-                $bookingData->update(
+                $subscriptionData->update(
                     [
                         'payment_status' => 'success',
                         'status' => 'confirmed'
@@ -129,13 +137,15 @@ class SslCommerzPaymentController extends Controller
                 //notify candidate
                 $data=[
                     'title'=>"Booking Success !",
-                    'message'=>"Your booking for exam: ". $bookingData->exam->title ." has been successful. Please Check your profile. ",
+                    // 'message'=>"Your booking for exam: ". $bookingData->exam->title ." has been successful. Please Check your profile. ",
+                    'message'=>"Your payment has been successful. Please Check your profile. ",
                     'url'=>'',
 
                 ];
-                $bookingData->candidate->notify(new CandidateNotification($data));
-
-                return redirect()->away($baseUrl . $successPath);
+                // dd($data);
+                $subscriptionData->candidate->notify(new CandidateNotification($data));
+                // dd($successPath);
+                return redirect()->away($successPath);
             } else {
                 #That means something wrong happened. You can redirect customer to your product page.
                 return redirect()->away($baseUrl . $failedPath);
@@ -144,16 +154,21 @@ class SslCommerzPaymentController extends Controller
             #That means something wrong happened. You can redirect customer to your product page.
             return redirect()->away($baseUrl . $failedPath);
         }
+        // $bookingData->candidate->notify(new CandidateNotification($data));
+     
+        return redirect()->away($successPath);
     }
 
     public function paymentTrack($bookingData, $requestData)
     {
+        // dd($bookingData);
         Payment::create([
-            'booking_id'      => $bookingData->id, // existing bookings.id
+            // ($requestData['title'] ?? '') == "subscription" ? 'package_id' : 'booking_id' => $bookingData->id,
+            'subscription_id'      => $bookingData->id, // existing bookings.id
             'type'            => 'booking',
             'amount'          => $bookingData->total_payable,
             'payment_method'  => $requestData['card_type'] ?? 'unknown',
-            'status'          => $requestData['status'],
+            'status'          => $bookingData['status'],
             // 'reference'       => 
             'additionals'     => json_encode($requestData),
         ]);

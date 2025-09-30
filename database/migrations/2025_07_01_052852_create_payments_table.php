@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained('bookings');
+            // $table->foreignId('booking_id')->nullable()->constrained('bookings');
+            $table->foreignId('subscription_id')->nullable()->constrained('user_subscriptions')->nullOnDelete();
+
             $table->enum('type', ['booking', 'certificate'])->default('booking');
             $table->decimal('amount', 10, 2);
             $table->string('payment_method');

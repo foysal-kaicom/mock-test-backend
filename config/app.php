@@ -31,7 +31,7 @@ return [
 
     'frontend' => [
         'url' => env('FRONTEND_URL', 'https://www.kaicombd.com'),
-        'payment_success' => env('FRONTEND_PAYMENT_SUCCESS', '/payment-success/{booking_id}'),
+        'payment_success' => env('FRONTEND_PAYMENT_SUCCESS', '/packages/payment-success'),
         'payment_failed' => env('FRONTEND_PAYMENT_FAILED', '/payment-failed/{booking_id}'),
         'payment_cancel' => env('FRONTEND_PAYMENT_CANCEL', '/payment-cancel/{booking_id}'),
     ],

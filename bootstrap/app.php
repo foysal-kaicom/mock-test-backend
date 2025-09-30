@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
        $middleware->alias([
             'checkPermission' => \App\Http\Middleware\CheckPermission::class,
+            'checkSubscription' => \App\Http\Middleware\CheckSubscription::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             '/success',

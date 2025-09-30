@@ -12,4 +12,8 @@ class Payment extends Model
     {
         return $this->belongsTo(Booking::class, 'booking_id', 'id');
     }
+    public function package()
+    {
+        return $this->belongsTo(UserSubscription::class);
+    }
 }
