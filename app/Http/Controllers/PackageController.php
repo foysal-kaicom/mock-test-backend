@@ -94,7 +94,7 @@ class PackageController extends Controller
     // API to get package details
     public function show()
     {
-        $packages = Package::with(['package_details.exam'])->get()->map(function($package) {
+        $packages = Package::with(['package_details.exam'])->where('status', 1)->get()->map(function($package) {
             return [
                 'id' => $package->id,
                 'name' => $package->name,

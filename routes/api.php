@@ -66,6 +66,7 @@ Route::prefix('v1')->group(function () {
 
         Route::group(['prefix' => 'mock-test', 'as' => 'mock-test.', 'middleware' => ['checkSubscription'] ], function () {
             Route::get('/get-questions', [MockTestController::class, 'getQuestions']);
+            
             Route::post('/submit-answer', [MockTestController::class, 'evaluateAnswers']);
             Route::get('/results', [MockTestController::class, 'getTestResult']);
         });

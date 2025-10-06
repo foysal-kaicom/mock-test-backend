@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreMockTestRequest;
+use Throwable;
+use App\Models\Exam;
+use App\Models\Candidate;
+use Illuminate\Http\Request;
 use App\Models\MockTestModule;
-use App\Models\MockTestQuestion;
-use App\Models\MockTestQuestionGroup;
-use App\Models\MockTestQuestionOption;
+use App\Models\MockTestRecords;
 use App\Models\MockTestSection;
+use App\Models\MockTestQuestion;
+use Illuminate\Support\Facades\DB;
 use App\Services\FileStorageService;
 use Brian2694\Toastr\Facades\Toastr;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\MockTestQuestionGroup;
+use App\Models\MockTestQuestionOption;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
-use Throwable;
+use App\Http\Requests\StoreMockTestRequest;
 
 class MockTestController extends Controller
 {
@@ -215,6 +219,26 @@ class MockTestController extends Controller
             Toastr::error("Failed to delete question: " . $ex->getMessage());
             return redirect()->back();
         }
+    }
+
+    public function getReportsData(Request $request)
+    {
+        $candidates = Candidate::all();
+        $exams = Exam::all();
+
+        $query = MockTestRecords::with('candidate', 'exam');
+
+        if ($request->candidate_id) {
+            $query->where('candidate_id', $request->candidate_id);
+        }
+
+        if ($request->exam_id) {
+            $query->where('exam_id', $request->exam_id);
+        }
+
+        $records = $query->orderBy('created_at', 'desc')->get();
+
+        return view('candidate.reports.list', compact('records', 'candidates', 'exams'));
     }
 
     

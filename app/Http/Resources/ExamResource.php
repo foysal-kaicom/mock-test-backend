@@ -18,7 +18,10 @@ class ExamResource extends JsonResource
         return [
                 'id'=>$this->id,
                 'slug'=>$this->slug,
+                'short_name'=>$this->name,
+                // 'image' => $this->image ? asset('storage/' . $this->image) : null,
                 'title'=>$this->title,
+                'description'=>$this->description,
                 'fee'=>(int)$this->fee .' BDT',
                 'exam_date'=>date('d-M-Y',strtotime($this->exam_date)),
                 'start_time'=>date('h:i A',strtotime($this->start_time)),

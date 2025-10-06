@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_subscription_id')->constrained('user_subscriptions')->cascadeOnDelete();
             $table->foreignId('package_details_id')->constrained('package_details')->cascadeOnDelete();
             $table->foreignId('exam_id')->constrained('exams')->cascadeOnDelete();
-            $table->unsignedInteger('max_exam_attempt')->default(0);
+            $table->integer('max_exam_attempt')->default(0);
+            $table->integer('used_exam_attempt')->default(0); 
             $table->timestamps();
         });
     }

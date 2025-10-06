@@ -37,6 +37,14 @@
             <!-- Form Fields -->
             <div class="col-md-9">
                 <div class="row g-3">
+                    <!-- Exam Name -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Exam Short Name</label>
+                        <input type="text" name="name" value="{{ old('name') }}"
+                            class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter exam short name" />
+                        @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
+                    </div>
+
                     <!-- Exam Title -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Exam Title</label>

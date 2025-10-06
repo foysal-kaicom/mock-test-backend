@@ -14,6 +14,7 @@ class Exam extends Model
     protected $table = 'exams';
 
     protected $fillable = [
+        'name',
         'title',
         'slug',
         'description',
@@ -59,4 +60,10 @@ class Exam extends Model
     {
         return $this->belongsToMany(PackageDetail::class, 'package_detail_exam');
     }
+
+    public function sections()
+    {
+        return $this->belongsToMany(MockTestSection::class, 'exam_section', 'exam_id', 'section_id');
+    }
+
 }

@@ -22,6 +22,7 @@ class ExamRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => 'required|string|max:100',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'exam_date' => 'nullable|date',

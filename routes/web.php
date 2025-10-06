@@ -21,6 +21,7 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AccountingController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\DemoQuestionController;
+use App\Http\Controllers\MockTestModuleController;
 use App\Http\Controllers\BusinessSettingController;
 use App\Http\Controllers\CertificateClaimContoller;
 
@@ -87,9 +88,15 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/edit-question/{id}', [MockTestController::class, 'editQuestion'])->name('edit.question');
         Route::post('/update-question/{id}', [MockTestController::class, 'updateQuestion'])->name('question.update');
         Route::delete('/delete-question/{id}', [MockTestController::class, 'deleteQuestion'])->name('question.delete');
+
+        Route::get('/reports/data', [MockTestController::class, 'getReportsData'])->name('reports.list');
+
     });
 
     Route::resource('packages', PackageController::class);
+    Route::resource('mock-test-modules', MockTestModuleController::class);
+    Route::post('mock-test-modules/{id}/toggle-status', [MockTestModuleController::class, 'toggleStatus'])
+    ->name('mock-test-modules.toggleStatus');
 
     // Extra routes
     Route::post('packages/{package}/buy', [PackageController::class, 'buy'])->name('packages.buy');
