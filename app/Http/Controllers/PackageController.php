@@ -17,7 +17,10 @@ class PackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::with('package_details')->get();
+        $packages = Package::with('package_details')
+        ->orderByRaw('ISNULL(`order`), `order` ASC')
+        // ->orderBy('order', 'asc')
+        ->get();
         return view('packages.index', compact('packages'));
     }
 
@@ -35,6 +38,9 @@ class PackageController extends Controller
             'is_popular' => $request->has('is_popular') ? 1 : 0,
             'short_description' => $request->short_description,
             'description' => $request->description,
+            'is_home' => $request->has('is_home') ? 1 : 0,
+            'order' => $request->order,
+
             // 'status' => $request->status,
         ]);
 
@@ -67,6 +73,8 @@ class PackageController extends Controller
             'short_description' => $request->short_description,
             'description' => $request->description,
             'status' => $request->status,
+            'is_home' => $request->has('is_home') ? 1 : 0,
+            'order' => $request->order,
         ]);
 
         // Delete old details and re-insert
@@ -92,23 +100,25 @@ class PackageController extends Controller
     }
 
     // API to get package details
-    public function show()
-    {
-        $packages = Package::with(['package_details.exam'])->where('status', 1)->get()->map(function($package) {
-            return [
-                'id' => $package->id,
-                'name' => $package->name,
-                'price' => $package->price,
-                'short_description' => $package->short_description,
-                'description' => $package->description,
-                'status' => $package->status,
-                'is_popular' => $package->is_popular,
-                'package_details' => PackageDetailResource::collection($package->package_details),
-            ];
-        });
+    // public function show()
+    // {
+    //     $packages = Package::with(['package_details.exam'])->where('status', 1)->orderBy('order', 'asc')->get()->map(function($package) {
+    //         return [
+    //             'id' => $package->id,
+    //             'name' => $package->name,
+    //             'price' => $package->price,
+    //             'short_description' => $package->short_description,
+    //             'description' => $package->description,
+    //             'status' => $package->status,
+    //             'is_popular' => $package->is_popular,
+    //             'is_home' => $package->is_home,
+    //             'sequence' => $package->order,
+    //             'package_details' => PackageDetailResource::collection($package->package_details),
+    //         ];
+    //     });
 
-        return $this->responseWithSuccess($packages, 'Packages retrieved successfully');
-    }
+    //     return $this->responseWithSuccess($packages, 'Packages retrieved successfully');
+    // }
 
     // Buy package
     // public function buy(Package $package)
@@ -126,6 +136,39 @@ class PackageController extends Controller
 
 
 
+    public function show(Request $request)
+    {
+        // Start the query
+        $query = Package::with(['package_details.exam'])
+            ->where('status', 1)
+            ->orderByRaw('ISNULL(`order`), `order` ASC');
+            // ->orderBy('order', 'asc');
+
+        // Apply filter dynamically
+        if ($request->has('is_home') && $request->is_home == true) {
+            $query->where('is_home', true);
+        }
+
+        // Add ordering
+        $packages = $query->orderBy('order', 'asc')
+            ->get()
+            ->map(function ($package) {
+                return [
+                    'id' => $package->id,
+                    'name' => $package->name,
+                    'price' => $package->price,
+                    'short_description' => $package->short_description,
+                    'description' => $package->description,
+                    'status' => $package->status,
+                    'is_popular' => $package->is_popular,
+                    'is_home' => $package->is_home,
+                    'sequence' => $package->order,
+                    'package_details' => PackageDetailResource::collection($package->package_details),
+                ];
+            });
+
+        return $this->responseWithSuccess($packages, 'Packages retrieved successfully');
+    }
 
     // Initiate package payment
     public function subscribe(Request $request, SslCommerzPaymentController $sslController)

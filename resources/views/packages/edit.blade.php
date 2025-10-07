@@ -35,6 +35,15 @@
                 @error('price') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
 
+            <!-- Home -->
+            <div class="col-md-3 d-flex align-items-center">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" name="is_home" id="isHome"
+                        {{ $package->is_home ? 'checked' : '' }}>  
+                    <label for="isHome" class="form-check-label fw-semibold">Show Homepage</label>
+                </div>
+            </div>
+
             <!-- Popular -->
             <div class="col-md-3 d-flex align-items-center">
                 <div class="form-check mt-4">
@@ -42,6 +51,14 @@
                         {{ $package->is_popular ? 'checked' : '' }}>
                     <label for="isPopular" class="form-check-label fw-semibold">Popular Package</label>
                 </div>
+            </div>
+
+            <!-- Order -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Sequence</label>
+                <input type="number" name="order" value="{{ $package->order }}"
+                    class="form-control form-control-lg shadow-sm rounded-2" placeholder="e.g. 1" required />
+                @error('order') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
 
             <!-- Short Description -->

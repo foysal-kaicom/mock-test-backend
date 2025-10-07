@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Package extends Model
 {
-    protected $fillable = ['name', 'price', 'short_description', 'description','status', 'is_popular'];
+    protected $fillable = ['name', 'price', 'short_description', 'description','status', 'is_popular', 'is_home', 'order'];
 
     protected $casts = [
         'is_popular' => 'boolean',

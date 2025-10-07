@@ -1,63 +1,3 @@
-{{-- @extends('master')
-
-@section('contents') --}}
-{{-- <div class="container">
-    <h2>Create Package</h2>
-    <form action="{{ route('packages.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label>Name</label>
-            <input name="name" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Price</label>
-            <input name="price" class="form-control" type="number" required>
-        </div>
-
-        <div class="form-group">
-            <label>Short Description</label>
-            <textarea name="short_description"  class="form-control"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Description</label>
-            <textarea name="description" id="details-editor" class="form-control"></textarea>
-        </div>
-
-        <!-- Is Popular -->
-        <label>
-            <input type="checkbox" name="is_popular" {{ old('is_popular') }}>
-            Popular Package
-        </label>
-
-        <h4>Exams</h4>
-        <div id="exam-wrapper">
-            <div class="exam-row flex gap-2 mb-2">
-                <select name="exam_id[]" class="form-control" required>
-                    <option value="">-- Select Exam --</option>
-                    @foreach($exams as $exam)
-                        <option value="{{ $exam->id }}">{{ $exam->title }}</option>
-                    @endforeach
-                </select>
-                <input type="number" name="max_exam_attempt[]" placeholder="Max Attempt" class="form-control" required>
-            </div>
-        </div>
-        <button type="button" id="add-exam" class="btn btn-sm btn-secondary mt-2">+ Add Exam</button>
-
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-    </form>
-</div> --}}
-
-
-
-
-
-
-
-
-
-
-
 @extends('master')
 
 @section('contents')
@@ -94,12 +34,28 @@
             @error('price') <div class="text-danger small">{{ $message }}</div> @enderror
         </div>
 
+        <!-- Home -->
+        <div class="col-md-12 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_home" id="isHome" {{ old('is_home') ? 'checked' : '' }}>
+                <label for="isHome" class="form-check-label fw-semibold">Show Homepage</label>
+            </div>
+        </div>
+
         <!-- Popular -->
-        <div class="col-md-3 d-flex align-items-center">
-            <div class="form-check mt-4">
+        <div class="col-md-12 d-flex align-items-center">
+            <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="is_popular" id="isPopular" {{ old('is_popular') ? 'checked' : '' }}>
                 <label for="isPopular" class="form-check-label fw-semibold">Popular Package</label>
             </div>
+        </div>
+
+        <!-- Order -->
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Sequence</label>
+            <input type="number" name="order" value="{{ old('order') }}"
+                class="form-control form-control-lg shadow-sm rounded-2" placeholder="e.g. 1" required />
+            @error('order') <div class="text-danger small">{{ $message }}</div> @enderror
         </div>
 
         <!-- Short Description -->

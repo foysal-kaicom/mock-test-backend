@@ -9,7 +9,7 @@
   </head>
   <body>
     <section>
-      <div class="container bg-light rounded col-lg-5" style="position:relative; top:140px; box-shadow: 0 8px 10px rgba(33, 1, 1, 0.1); width:500px;padding-top:100px; height:500px">
+      <div class="container bg-light rounded col-lg-5" style="position:relative; top:140px; box-shadow: 0 8px 10px rgba(33, 1, 1, 0.1); width:500px;padding-top:30px; height:500px">
         <div class="row justify-content-center">
           <div class="col-md-8 col-lg-10">
             <div class="text-start text-secondary mb-4">

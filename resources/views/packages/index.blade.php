@@ -24,6 +24,7 @@
                     <th scope="col" class="text-secondary small px-4 py-3">Name</th> 
                     <th scope="col" class="text-secondary small px-4 py-3">Price</th> 
                     <th scope="col" class="text-secondary small px-4 py-3">Details</th> 
+                    <th scope="col" class="text-secondary small px-4 py-3">Sequence</th> 
                     <th scope="col" class="text-secondary small px-4 py-3">Status</th> 
                     <th scope="col" class="text-secondary small px-4 py-3">Actions</th> 
                 </tr> 
@@ -35,6 +36,7 @@
                     <td class="px-4 py-1">{{ $package->name }}</td> 
                     <td class="px-4 py-1">{{ $package->price }}</td> 
                     <td class="px-4 py-1">{{ $package->short_description }}</td> 
+                    <td class="px-4 py-1">{{ $package->order }}</td>
                     <td class="px-4 py-1"> 
                         @if($package->status) 
                             <span class="badge bg-success">Active</span> 
