@@ -238,7 +238,7 @@ class MockTestController extends Controller
 
         $records = $query->orderBy('created_at', 'desc')->get();
 
-        return view('candidate.reports.list', compact('records', 'candidates', 'exams'));
+        return view('mock-tests.reports.list', compact('records', 'candidates', 'exams'));
     }
 
     

@@ -89,7 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/update-question/{id}', [MockTestController::class, 'updateQuestion'])->name('question.update');
         Route::delete('/delete-question/{id}', [MockTestController::class, 'deleteQuestion'])->name('question.delete');
 
-        Route::get('/reports/data', [MockTestController::class, 'getReportsData'])->name('reports.list');
+        Route::get('/reports/list', [MockTestController::class, 'getReportsData'])->name('reports.list');
 
     });
 

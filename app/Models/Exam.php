@@ -66,4 +66,9 @@ class Exam extends Model
         return $this->belongsToMany(MockTestSection::class, 'exam_section', 'exam_id', 'section_id');
     }
 
+    public function mockTestModules()
+    {
+        return $this->hasMany(MockTestModule::class);
+    }
+
 }
