@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscriptionDetails;
 use App\Http\Resources\MockTestSectionResource;
+use App\Http\Resources\UserSubscriptionResource;
 
 class MockTestController extends Controller
 {
@@ -223,5 +224,24 @@ class MockTestController extends Controller
         // $testResults = MockTestResultResource::collection(MockTestRecords::where('candidate_id', $id)->get());//need to use later
        
         return $this->responseWithSuccess($testResults, "Mock test results fetched.");
+    }
+
+    public function activeUserSubscriptionDetails(){
+        $candidateId = Auth::guard('candidate')->id();
+        $activeSubscriptions = UserSubscription::where('candidate_id', $candidateId)
+            ->where('status', 'confirmed')
+            ->where('payment_status', 'success')
+            ->with('package')
+            ->get();
+
+        if ($activeSubscriptions->isEmpty()) {
+            return $this->responseWithError("You do not have an active subscription.");
+        }
+
+        // Use a resource for formatting the subscription details
+        return $this->responseWithSuccess(
+            UserSubscriptionResource::collection($activeSubscriptions),
+            "Active subscription details fetched."
+        );
     }
 }

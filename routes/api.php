@@ -27,6 +27,7 @@ Route::prefix('v1')->group(function () {
 
 
     Route::get('/settings', [HomeController::class, 'settingsData']);
+    Route::get('/faq', [HomeController::class, 'faq']);
     Route::post('/candidate/register', [CandidateController::class, 'register']);
 
     Route::group(['prefix' => 'exam', 'as' => 'exam.'], function () {
@@ -69,6 +70,8 @@ Route::prefix('v1')->group(function () {
             
             Route::post('/submit-answer', [MockTestController::class, 'evaluateAnswers']);
             Route::get('/results', [MockTestController::class, 'getTestResult']);
+
+            Route::get('/active-user-subscription', [MockTestController::class, 'activeUserSubscriptionDetails']);
         });
 
        

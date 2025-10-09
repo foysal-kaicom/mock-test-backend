@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscriptionDetails;
 use App\Http\Resources\MockTestSectionResource;
 
-class MockTestController extends Controller
+class MockTestControllerOLD extends Controller
 {
 
     // public function getQuestions(Request $request)
