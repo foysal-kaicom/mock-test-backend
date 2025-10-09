@@ -251,13 +251,48 @@ class MockTestController extends Controller
 
 
 
-    public function getTestResult(){
-        $id = Auth::guard('candidate')->id();
-        $testResults = MockTestRecords::where('candidate_id', $id)->get();
-        // $testResults = MockTestResultResource::collection(MockTestRecords::where('candidate_id', $id)->get());//need to use later
+    // public function getTestResult(){
+    //     $id = Auth::guard('candidate')->id();
+    //     $testResults = MockTestRecords::where('candidate_id', $id)->get();
+    //     // $testResults = MockTestResultResource::collection(MockTestRecords::where('candidate_id', $id)->get());//need to use later
        
-        return $this->responseWithSuccess($testResults, "Mock test results fetched.");
+    //     return $this->responseWithSuccess($testResults, "Mock test results fetched.");
+    // }
+
+    public function getTestResult()
+    {
+        try {
+            $candidateId = Auth::guard('candidate')->id();
+
+            // ✅ Load candidate name and related details with eager loading
+            $testResults = MockTestRecords::with(['candidate:id,first_name', 'details.module:id,name'])
+                ->where('candidate_id', $candidateId)
+                ->get()
+                ->map(function ($record) {
+                    // Group details by module and count correct answers
+                    $moduleScores = $record->details
+                        ->groupBy(fn($d) => $d->module->name ?? 'Unknown')
+                        ->map(function ($group) {
+                            return $group->where('is_correct', 1)->count();
+                        });
+
+                    return [
+                        'candidate_name' => $record->candidate->first_name ?? 'N/A',
+                        'exam_id'        => $record->exam_id,
+                        'question_set'   => $record->question_set,
+                        'total_marks'    => $record->total_marks,
+                        'module_scores'  => $moduleScores,
+                        'created_at'     => $record->created_at->format('Y-m-d H:i:s'),
+                    ];
+                });
+
+            return $this->responseWithSuccess($testResults, "Mock test results fetched successfully.");
+        } catch (Throwable $e) {
+            Log::error('Get test result error', ['error' => $e->getMessage()]);
+            return $this->responseWithError("Something went wrong.", $e->getMessage());
+        }
     }
+
 
     public function activeUserSubscriptionDetails(){
         $candidateId = Auth::guard('candidate')->id();

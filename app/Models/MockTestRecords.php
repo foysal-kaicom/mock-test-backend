@@ -18,7 +18,7 @@ class MockTestRecords extends Model
 
     public function details()
     {
-        return $this->hasMany(MockTestRecordDetails::class);
+        return $this->hasMany(MockTestRecordDetails::class, 'mock_test_record_id');
     }
 
     public function candidate()
