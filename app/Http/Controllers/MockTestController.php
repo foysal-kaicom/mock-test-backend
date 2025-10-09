@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Throwable;
+use Carbon\Carbon;
 use App\Models\Exam;
 use App\Models\Candidate;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\FileStorageService;
 use Brian2694\Toastr\Facades\Toastr;
 use App\Models\MockTestQuestionGroup;
+use App\Models\MockTestRecordDetails;
 use App\Models\MockTestQuestionOption;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreMockTestRequest;
@@ -273,12 +275,35 @@ class MockTestController extends Controller
         }
     }
 
-    public function getReportsData(Request $request)
-    {
-        $candidates = Candidate::all();
-        $exams = Exam::all();
+    // public function getReportsData(Request $request)
+    // {
+    //     $candidates = Candidate::all();
+    //     $exams = Exam::all();
 
-        $query = MockTestRecords::with('candidate', 'exam');
+    //     $query = MockTestRecords::with('candidate', 'exam');
+
+    //     if ($request->candidate_id) {
+    //         $query->where('candidate_id', $request->candidate_id);
+    //     }
+
+    //     if ($request->exam_id) {
+    //         $query->where('exam_id', $request->exam_id);
+    //     }
+
+    //     $records = $query->orderBy('created_at', 'desc')->get();
+
+    //     return view('mock-tests.reports.list', compact('records', 'candidates', 'exams'));
+    // }
+
+
+public function getReportsData(Request $request)
+{
+    $candidates = Candidate::all();
+    $exams = Exam::all();
+
+    // Check if this is an AJAX request from DataTables
+    if ($request->ajax()) {
+        $query = MockTestRecords::with(['candidate', 'exam']);
 
         if ($request->candidate_id) {
             $query->where('candidate_id', $request->candidate_id);
@@ -288,10 +313,44 @@ class MockTestController extends Controller
             $query->where('exam_id', $request->exam_id);
         }
 
+        if ($request->date_range) {
+            [$start, $end] = explode(' - ', $request->date_range);
+            $query->whereBetween('created_at', [
+                Carbon::parse($start)->startOfDay(),
+                Carbon::parse($end)->endOfDay(),
+            ]);
+        }
+
         $records = $query->orderBy('created_at', 'desc')->get();
 
-        return view('mock-tests.reports.list', compact('records', 'candidates', 'exams'));
+        return datatables()->of($records)
+            ->addColumn('candidate', fn($row) => $row->candidate->full_name ?? '-')
+            ->addColumn('exam', fn($row) => $row->exam->title ?? '-')
+            ->addColumn('results', function($record) {
+                $details = MockTestRecordDetails::with('module')
+                    ->where('mock_test_record_id', $record->id)
+                    ->get();
+                $modules = [];
+                foreach ($details as $detail) {
+                    $moduleName = $detail->module->name ?? 'Unknown';
+                    if (!isset($modules[$moduleName])) $modules[$moduleName] = 0;
+                    if ($detail->is_correct) $modules[$moduleName]++;
+                }
+                $html = '';
+                foreach ($modules as $module => $count) {
+                    $html .= "<div><strong>{$module}:</strong> {$count}</div>";
+                }
+                return $html ?: '-';
+            })
+            ->addColumn('date', fn($row) => $row->created_at->format('j, M Y'))
+            ->addColumn('question_set', fn($row) => $row->question_set)
+            ->rawColumns(['results'])
+            ->make(true);
     }
+
+    return view('mock-tests.reports.list', compact('candidates', 'exams'));
+}
+
 
     
 
