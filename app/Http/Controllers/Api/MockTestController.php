@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Throwable;
 use Illuminate\Http\Request;
+
 use App\Models\MockTestRecords;
 use App\Models\MockTestSection;
 use App\Models\MockTestQuestion;
@@ -11,6 +12,7 @@ use App\Models\UserSubscription;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MockTestRecordDetails;
 use App\Models\UserSubscriptionDetails;
 use App\Http\Resources\MockTestSectionResource;
 use App\Http\Resources\UserSubscriptionResource;
@@ -90,27 +92,101 @@ class MockTestController extends Controller
         }
     }
 
+    // public function evaluateAnswers(Request $request)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         // 🔹 Step 1: Validate exam_id
+    //         $request->validate([
+    //             'exam_id' => 'required|integer|exists:exams,id',
+    //         ]);
+
+    //         $examId = $data['exam_id'];
+    //         $candidateId = Auth::guard('candidate')->id();
+
+    //         $modulesScore = [
+    //             'Reading' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
+    //             'Listening' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
+    //         ];
+
+    //         // 🔹 Step 2: Loop over numeric keys only
+    //         foreach ($data as $key => $questionPayload) {
+    //             if ($key === 'exam_id') continue; // skip exam_id
+    //             if (!isset($questionPayload['id']) || !isset($questionPayload['answer'])) continue;
+
+    //             $question = MockTestQuestion::with(['section.mockTestModule', 'mockTestQuestionOption'])
+    //                 ->find($questionPayload['id']);
+
+    //             if (!$question) continue;
+
+    //             $moduleName = $question->section->mockTestModule->name ?? null;
+    //             if (!isset($modulesScore[$moduleName])) continue;
+
+    //             $modulesScore[$moduleName]['answered']++;
+
+    //             $correctAnswer = $question->mockTestQuestionOption->correct_answer_index;
+    //             if ($questionPayload['answer'] == $correctAnswer) {
+    //                 $modulesScore[$moduleName]['correct']++;
+    //             } else {
+    //                 $modulesScore[$moduleName]['wrong']++;
+    //             }
+    //         }
+
+    //         // 🔹 Step 3: Create mock test record
+    //         $mockTestRecord = MockTestRecords::create([
+    //             'candidate_id'              => $candidateId,
+    //             'exam_id'                   => $examId,
+    //             'question_set'              => 1,
+    //             'reading_answered'          => $modulesScore['Reading']['answered'],
+    //             'correct_reading_answer'    => $modulesScore['Reading']['correct'],
+    //             'wrong_reading_answer'      => $modulesScore['Reading']['wrong'],
+    //             'listening_answered'        => $modulesScore['Listening']['answered'],
+    //             'correct_listening_answer'  => $modulesScore['Listening']['correct'],
+    //             'wrong_listening_answer'    => $modulesScore['Listening']['wrong'],
+    //         ]);
+
+    //         // 🔹 Step 4: Increment used_exam_attempt
+    //         $subscriptionId = UserSubscription::where('candidate_id', $candidateId)
+    //             ->where('status', 'confirmed')
+    //             ->value('id'); // assuming one active subscription per user
+    //         // dd($subscriptionId);
+    //         if ($subscriptionId) {
+    //             $userSubscriptionDetail = UserSubscriptionDetails::where('user_subscription_id', $subscriptionId)
+    //                 ->where('exam_id', $examId)
+    //                 ->first();
+    //             // dd($userSubscriptionDetail);
+
+    //             if ($userSubscriptionDetail) {
+    //                 $userSubscriptionDetail->increment('used_exam_attempt');
+    //             }
+    //         }
+
+    //         return $this->responseWithSuccess($mockTestRecord, "Mock test result recorded successfully.");
+    //     } catch (Throwable $e) {
+    //         Log::error('Mock test evaluation error', ['error' => $e->getMessage()]);
+    //         return $this->responseWithError("Something went wrong.", $e->getMessage());
+    //     }
+    // }
+
     public function evaluateAnswers(Request $request)
     {
         try {
             $data = $request->all();
 
-            // 🔹 Step 1: Validate exam_id
             $request->validate([
                 'exam_id' => 'required|integer|exists:exams,id',
             ]);
 
             $examId = $data['exam_id'];
             $candidateId = Auth::guard('candidate')->id();
+            $questionSet = 1;
 
-            $modulesScore = [
-                'Reading' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-                'Listening' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-            ];
+            $totalMarks = 0;
+            $details = [];
 
-            // 🔹 Step 2: Loop over numeric keys only
             foreach ($data as $key => $questionPayload) {
-                if ($key === 'exam_id') continue; // skip exam_id
+                if ($key === 'exam_id') continue;
                 if (!isset($questionPayload['id']) || !isset($questionPayload['answer'])) continue;
 
                 $question = MockTestQuestion::with(['section.mockTestModule', 'mockTestQuestionOption'])
@@ -118,42 +194,47 @@ class MockTestController extends Controller
 
                 if (!$question) continue;
 
-                $moduleName = $question->section->mockTestModule->name ?? null;
-                if (!isset($modulesScore[$moduleName])) continue;
-
-                $modulesScore[$moduleName]['answered']++;
-
                 $correctAnswer = $question->mockTestQuestionOption->correct_answer_index;
-                if ($questionPayload['answer'] == $correctAnswer) {
-                    $modulesScore[$moduleName]['correct']++;
-                } else {
-                    $modulesScore[$moduleName]['wrong']++;
+                $isCorrect = ($questionPayload['answer'] == $correctAnswer) ? 1 : 0;
+
+                if ($isCorrect) {
+                    $totalMarks++;
                 }
+
+                $details[] = [
+                    'mock_test_question_id' => $question->id,
+                    'mock_test_question_option_id' => $questionPayload['answer'] ?? null,
+                    'mock_test_section_id' => $question->section_id ?? null,
+                    'mock_test_module_id' => $question->section->mock_test_module_id ?? null,
+                    'is_correct' => $isCorrect,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
 
-            // 🔹 Step 3: Create mock test record
+            // ✅ Step 3: Create record summary
             $mockTestRecord = MockTestRecords::create([
-                'candidate_id'              => $candidateId,
-                'exam_id'                   => $examId,
-                'question_set'              => 1,
-                'reading_answered'          => $modulesScore['Reading']['answered'],
-                'correct_reading_answer'    => $modulesScore['Reading']['correct'],
-                'wrong_reading_answer'      => $modulesScore['Reading']['wrong'],
-                'listening_answered'        => $modulesScore['Listening']['answered'],
-                'correct_listening_answer'  => $modulesScore['Listening']['correct'],
-                'wrong_listening_answer'    => $modulesScore['Listening']['wrong'],
+                'candidate_id' => $candidateId,
+                'exam_id' => $examId,
+                'question_set' => $questionSet,
+                'total_marks' => $totalMarks,
             ]);
 
-            // 🔹 Step 4: Increment used_exam_attempt
+            // ✅ Step 4: Bulk insert details
+            foreach ($details as &$d) {
+                $d['mock_test_record_id'] = $mockTestRecord->id;
+            }
+            MockTestRecordDetails::insert($details);
+
+            // ✅ Step 5: Increment used_exam_attempt
             $subscriptionId = UserSubscription::where('candidate_id', $candidateId)
                 ->where('status', 'confirmed')
-                ->value('id'); // assuming one active subscription per user
-            // dd($subscriptionId);
+                ->value('id');
+
             if ($subscriptionId) {
                 $userSubscriptionDetail = UserSubscriptionDetails::where('user_subscription_id', $subscriptionId)
                     ->where('exam_id', $examId)
                     ->first();
-                // dd($userSubscriptionDetail);
 
                 if ($userSubscriptionDetail) {
                     $userSubscriptionDetail->increment('used_exam_attempt');
@@ -167,56 +248,8 @@ class MockTestController extends Controller
         }
     }
 
-    // public function evaluateAnswers(Request $request)
-    // {
-    //     try {
-    //         $modulesScore = [
-    //             'Reading' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-    //             'Listening' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-    //         ];
-    
-    //         $validatedData = $request->validate([
-    //             '*.id' => 'required|integer|exists:mock_test_questions,id',
-    //             '*.answer' => 'required|integer',
-    //         ]);
-    
-    //         foreach ($validatedData as $questionPayload) {
-    
-    //             $question = MockTestQuestion::with('section.mockTestModule', 'mockTestQuestionOption')->find($questionPayload['id']);
-    
-    //             if (!$question) continue;
-    
-    //             $moduleName = $question->section->mockTestModule->name;
-    
-    //             $modulesScore[$moduleName]['answered']++;
-    
-    //             // Check answer
-    //             $correctAnswer = $question->mockTestQuestionOption->correct_answer_index;
-    //             if ($questionPayload['answer'] == $correctAnswer) {
-    //                 $modulesScore[$moduleName]['correct']++;
-    //             } else {
-    //                 $modulesScore[$moduleName]['wrong']++;
-    //             }
-    //         }
 
-    //         $mockTestRecord = MockTestRecords::create([
-    //             'candidate_id' => Auth::guard('candidate')->id(),
-    //             'question_set' => 1,
-    //             'reading_answered' => $modulesScore['Reading']['answered'],
-    //             'correct_reading_answer' => $modulesScore['Reading']['correct'],
-    //             'wrong_reading_answer' => $modulesScore['Reading']['wrong'],
-    //             'listening_answered' => $modulesScore['Listening']['answered'],
-    //             'correct_listening_answer' => $modulesScore['Listening']['correct'],
-    //             'wrong_listening_answer' => $modulesScore['Listening']['wrong'],
-    //         ]);
-    
-    //         return $this->responseWithSuccess($mockTestRecord, "Mock test result responded.");
-    //     }
-    //     catch (Throwable $e) {
-    //         Log::error('Mock test unexpected error', ['error' => $e->getMessage()]);
-    //         return $this->responseWithError("Something went wrong.",$e->getMessage());
-    //     }
-    // }
+
 
     public function getTestResult(){
         $id = Auth::guard('candidate')->id();

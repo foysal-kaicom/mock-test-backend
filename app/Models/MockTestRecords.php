@@ -13,19 +13,21 @@ class MockTestRecords extends Model
         'candidate_id',
         'exam_id',
         'question_set',
-        'reading_answered',
-        'correct_reading_answer',
-        'wrong_reading_answer',
-        'listening_answered',
-        'correct_listening_answer',
-        'wrong_listening_answer',
+        'total_marks',
     ];
 
-    public function candidate() {
-        return $this->belongsTo(Candidate::class, 'candidate_id');
+    public function details()
+    {
+        return $this->hasMany(MockTestRecordDetails::class);
     }
 
-    public function exam() {
-        return $this->belongsTo(Exam::class, 'exam_id');
+    public function candidate()
+    {
+        return $this->belongsTo(Candidate::class);
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
     }
 }
