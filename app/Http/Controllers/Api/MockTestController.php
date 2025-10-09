@@ -17,128 +17,9 @@ use App\Http\Resources\MockTestSectionResource;
 class MockTestController extends Controller
 {
 
-    // public function getQuestions(Request $request)
-    // {
-    //     try {
-
-    //         $examId = $request->exam_id;
-
-    //         if (!$examId) {
-    //             return $this->responseWithError("exam_id is required.");
-    //         }
-
-    //         $allSections = MockTestSection::with(['mockTestQuestion', 'mockTestQuestionGroup', 'mockTestModule'])
-    //         ->where('exam_id', $examId)
-    //         ->get();
-
-
-    //         // $allSections = MockTestSection::with(['mockTestQuestion','mockTestQuestionGroup','mockTestModule'])->get();
-
-    //         foreach ($allSections as $section) {
-
-    //             $data = MockTestSectionResource::make($section);
-
-    //             if ($data) {
-    //                 $sectionWiseQuestions[] = $data;
-    //             }
-    //         }
-
-    //         return $this->responseWithSuccess($sectionWiseQuestions, "Questions Generated");
-    //     } catch (Throwable $ex) {
-
-    //         return $this->responseWithError("Something went wrong.",$ex->getMessage());
-    //     }
-    // }
-
-    
-    // public function evaluateAnswers(Request $request)
-    // {
-    //     try {
-    //         $modulesScore = [
-    //             'Reading' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-    //             'Listening' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-    //         ];
-    
-    //         $validatedData = $request->validate([
-    //             '*.id' => 'required|integer|exists:mock_test_questions,id',
-    //             '*.answer' => 'required|integer',
-    //         ]);
-    
-    //         foreach ($validatedData as $questionPayload) {
-    
-    //             $question = MockTestQuestion::with('section.mockTestModule', 'mockTestQuestionOption')->find($questionPayload['id']);
-    
-    //             if (!$question) continue;
-    
-    //             $moduleName = $question->section->mockTestModule->name;
-    
-    //             $modulesScore[$moduleName]['answered']++;
-    
-    //             // Check answer
-    //             $correctAnswer = $question->mockTestQuestionOption->correct_answer_index;
-    //             if ($questionPayload['answer'] == $correctAnswer) {
-    //                 $modulesScore[$moduleName]['correct']++;
-    //             } else {
-    //                 $modulesScore[$moduleName]['wrong']++;
-    //             }
-    //         }
-
-    //         $mockTestRecord = MockTestRecords::create([
-    //             'candidate_id' => Auth::guard('candidate')->id(),
-    //             'question_set' => 1,
-    //             'reading_answered' => $modulesScore['Reading']['answered'],
-    //             'correct_reading_answer' => $modulesScore['Reading']['correct'],
-    //             'wrong_reading_answer' => $modulesScore['Reading']['wrong'],
-    //             'listening_answered' => $modulesScore['Listening']['answered'],
-    //             'correct_listening_answer' => $modulesScore['Listening']['correct'],
-    //             'wrong_listening_answer' => $modulesScore['Listening']['wrong'],
-    //         ]);
-    
-    //         return $this->responseWithSuccess($mockTestRecord, "Mock test result responded.");
-    //     }
-    //     catch (Throwable $e) {
-    //         Log::error('Mock test unexpected error', ['error' => $e->getMessage()]);
-    //         return $this->responseWithError("Something went wrong.",$e->getMessage());
-    //     }
-    // }
-
-    // public function getQuestions(Request $request)
-    // {
-    //     try {
-    //         $examId = $request->exam_id;
-
-    //         if (!$examId) {
-    //             return $this->responseWithError("exam_id is required.");
-    //         }
-
-    //         // Filter by exam_id
-    //         $allSections = MockTestSection::with(['mockTestQuestion', 'mockTestQuestionGroup', 'mockTestModule'])
-    //             ->where('exam_id', $examId)
-    //             ->get();
-
-    //         dd($allSections);
-
-
-    //         $sectionWiseQuestions = [];
-
-    //         foreach ($allSections as $section) {
-    //             $data = MockTestSectionResource::make($section);
-
-    //             if ($data) {
-    //                 $sectionWiseQuestions[] = $data;
-    //             }
-    //         }
-
-    //         return $this->responseWithSuccess($sectionWiseQuestions, "Questions generated for Exam ID: {$examId}");
-            
-    //     } catch (Throwable $ex) {
-    //         return $this->responseWithError("Something went wrong.", $ex->getMessage());
-    //     }
-    // }
-
-
     public function getQuestions(Request $request)
     {
+
         try {
             $examId = $request->exam_id;
 
@@ -175,16 +56,10 @@ class MockTestController extends Controller
             if (!$hasRemaining) {
                 return $this->responseWithError("You have reached the maximum attempt limit for this exam.");
             }
+            
 
-            // Step 4: Fetch sections & questions
-            // $allSections = MockTestSection::with([
-            //         'mockTestQuestion',
-            //         'mockTestQuestionGroup',
-            //         'mockTestModule' => function ($query) use ($examId) {
-            //             $query->where('exam_id', $examId);
-            //         }
-            //     ])
-            //     ->get();
+            // $allSections = MockTestSection::with(['mockTestQuestion','mockTestQuestionGroup','mockTestModule'])->get();
+
             $allSections = MockTestSection::with([
                 'mockTestQuestion',
                 'mockTestQuestionGroup',
@@ -195,11 +70,10 @@ class MockTestController extends Controller
             })
             ->get();
 
-                // dd($allSections);
-
             $sectionWiseQuestions = [];
 
             foreach ($allSections as $section) {
+
                 $data = MockTestSectionResource::make($section);
 
                 if ($data) {
@@ -207,93 +81,14 @@ class MockTestController extends Controller
                 }
             }
 
-            return $this->responseWithSuccess($sectionWiseQuestions, "Questions generated for Exam ID: {$examId}");
-            
+            return $this->responseWithSuccess($sectionWiseQuestions, "Questions Generated");
+
         } catch (Throwable $ex) {
-            return $this->responseWithError("Something went wrong.", $ex->getMessage());
+
+            return $this->responseWithError("Something went wrong.",$ex->getMessage());
         }
     }
 
-
-    // public function evaluateAnswers(Request $request)
-    // {
-    //     try {
-    //         $validatedData = $request->validate([
-    //             'exam_id' => 'required|integer|exists:exams,id',
-    //             '*.id' => 'required|integer|exists:mock_test_questions,id',
-    //             '*.answer' => 'required|integer',
-    //         ]);
-
-    //         $examId = $request->exam_id;
-    //         $candidateId = Auth::guard('candidate')->id();
-
-    //         $modulesScore = [
-    //             'Reading' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-    //             'Listening' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
-    //         ];
-
-
-            
-
-
-    //         foreach ($validatedData as $key => $questionPayload) {
-    //             // skip the exam_id field from validation array
-    //             if ($key === 'exam_id') continue;
-
-    //             $question = MockTestQuestion::with(['section.mockTestModule', 'mockTestQuestionOption'])
-    //                 ->find($questionPayload['id']);
-
-    //             if (!$question) continue;
-
-    //             $moduleName = $question->section->mockTestModule->name ?? null;
-
-    //             if (!isset($modulesScore[$moduleName])) continue;
-
-    //             $modulesScore[$moduleName]['answered']++;
-
-    //             $correctAnswer = $question->mockTestQuestionOption->correct_answer_index;
-    //             if ($questionPayload['answer'] == $correctAnswer) {
-    //                 $modulesScore[$moduleName]['correct']++;
-    //             } else {
-    //                 $modulesScore[$moduleName]['wrong']++;
-    //             }
-    //         }
-
-    //         // ✅ Create mock test record
-    //         $mockTestRecord = MockTestRecords::create([
-    //             'candidate_id'              => $candidateId,
-    //             'exam_id'                   => $examId,
-    //             'question_set'              => 1,
-    //             'reading_answered'          => $modulesScore['Reading']['answered'],
-    //             'correct_reading_answer'    => $modulesScore['Reading']['correct'],
-    //             'wrong_reading_answer'      => $modulesScore['Reading']['wrong'],
-    //             'listening_answered'        => $modulesScore['Listening']['answered'],
-    //             'correct_listening_answer'  => $modulesScore['Listening']['correct'],
-    //             'wrong_listening_answer'    => $modulesScore['Listening']['wrong'],
-    //         ]);
-
-    //         // ✅ Increment used_exam_attempt for the user's subscription
-    //         $subscriptionId = UserSubscription::where('candidate_id', $candidateId)
-    //             ->where('status', 'active')
-    //             ->value('id'); // assuming one active subscription per user
-
-    //         if ($subscriptionId) {
-    //             $userSubscriptionDetail = UserSubscriptionDetails::where('user_subscription_id', $subscriptionId)
-    //                 ->where('exam_id', $examId)
-    //                 ->first();
-
-    //             if ($userSubscriptionDetail) {
-    //                 $userSubscriptionDetail->increment('used_exam_attempt');
-    //             }
-    //         }
-
-    //         return $this->responseWithSuccess($mockTestRecord, "Mock test result recorded successfully.");
-    //     }
-    //     catch (Throwable $e) {
-    //         Log::error('Mock test evaluation error', ['error' => $e->getMessage()]);
-    //         return $this->responseWithError("Something went wrong.", $e->getMessage());
-    //     }
-    // }
     public function evaluateAnswers(Request $request)
     {
         try {
@@ -371,10 +166,56 @@ class MockTestController extends Controller
         }
     }
 
+    // public function evaluateAnswers(Request $request)
+    // {
+    //     try {
+    //         $modulesScore = [
+    //             'Reading' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
+    //             'Listening' => ['answered' => 0, 'correct' => 0, 'wrong' => 0],
+    //         ];
+    
+    //         $validatedData = $request->validate([
+    //             '*.id' => 'required|integer|exists:mock_test_questions,id',
+    //             '*.answer' => 'required|integer',
+    //         ]);
+    
+    //         foreach ($validatedData as $questionPayload) {
+    
+    //             $question = MockTestQuestion::with('section.mockTestModule', 'mockTestQuestionOption')->find($questionPayload['id']);
+    
+    //             if (!$question) continue;
+    
+    //             $moduleName = $question->section->mockTestModule->name;
+    
+    //             $modulesScore[$moduleName]['answered']++;
+    
+    //             // Check answer
+    //             $correctAnswer = $question->mockTestQuestionOption->correct_answer_index;
+    //             if ($questionPayload['answer'] == $correctAnswer) {
+    //                 $modulesScore[$moduleName]['correct']++;
+    //             } else {
+    //                 $modulesScore[$moduleName]['wrong']++;
+    //             }
+    //         }
 
-
-
-
+    //         $mockTestRecord = MockTestRecords::create([
+    //             'candidate_id' => Auth::guard('candidate')->id(),
+    //             'question_set' => 1,
+    //             'reading_answered' => $modulesScore['Reading']['answered'],
+    //             'correct_reading_answer' => $modulesScore['Reading']['correct'],
+    //             'wrong_reading_answer' => $modulesScore['Reading']['wrong'],
+    //             'listening_answered' => $modulesScore['Listening']['answered'],
+    //             'correct_listening_answer' => $modulesScore['Listening']['correct'],
+    //             'wrong_listening_answer' => $modulesScore['Listening']['wrong'],
+    //         ]);
+    
+    //         return $this->responseWithSuccess($mockTestRecord, "Mock test result responded.");
+    //     }
+    //     catch (Throwable $e) {
+    //         Log::error('Mock test unexpected error', ['error' => $e->getMessage()]);
+    //         return $this->responseWithError("Something went wrong.",$e->getMessage());
+    //     }
+    // }
 
     public function getTestResult(){
         $id = Auth::guard('candidate')->id();

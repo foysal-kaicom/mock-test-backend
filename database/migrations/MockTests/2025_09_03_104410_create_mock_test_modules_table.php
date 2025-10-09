@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mock_test_sections', function (Blueprint $table) {
+        Schema::create('mock_test_modules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mock_test_module_id')->constrained('mock_test_modules')->onDelete('cascade');
             $table->string('slug')->unique();
-            $table->string('title');
-            $table->longText('sample_question')->nullable();
+            $table->string('name');
             $table->enum('status', ['active', 'disabled'])->default('active');
-            $table->integer('question_limit')->default('1');
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mock_test_sections');
+        Schema::dropIfExists('mock_test_modules');
     }
 };

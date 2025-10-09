@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('mock_test_section_id')->constrained('mock_test_sections')->onDelete('cascade');
             $table->enum('type', ['single', 'multiple']);
-            $table->integer('set_no')->default(0);
             $table->enum('group_type', ['passage', 'audio'])->nullable();
             $table->text('content')->nullable()->comment('It can be passage or audio file path.');
             $table->integer('question_quantity')->default(1);

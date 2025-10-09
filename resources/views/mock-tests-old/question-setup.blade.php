@@ -37,20 +37,6 @@
         <span class="text-xs text-gray-400"> (If multiple questions under a passage or audio) </span>
       </div>
 
-      <div class="space-y-2">
-        <label class="block font-semibold">Set No</label>
-        <input 
-            type="number" 
-            name="set_no" 
-            min="0" 
-            max="10" 
-            class="bg-white drop-shadow-md text-sm border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
-            placeholder="Enter set number"
-        >
-    </div>
-    
-    
- 
       <div id="questionQuantityWrapper" class="space-y-2 hidden">
         <label for="questionQuantity" class="block font-semibold">Question Quantity</label>
         <select id="questionQuantity" name="question_quantity"
@@ -71,8 +57,8 @@
       </div>
       <div id="passageTextareaWrapper" class="space-y-2 hidden mt-3 w-full">
         <label for="passageTextarea" class="block font-semibold">Write Passage</label>
-        <textarea  rows="8" name="passage_or_file"
-          class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 tinymce"
+        <textarea id="content" rows="5" name="passage_or_file"
+          class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           placeholder="Write passage ..."></textarea>
       </div>
     </div>
@@ -88,8 +74,6 @@
   </div>
 </form>
 
-<!-- TinyMCE -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -101,141 +85,69 @@
     const questionQuantity = document.getElementById("questionQuantity");
     const questionsContainer = document.getElementById("questionsContainer");
 
-    function initTiny(selector) {
-      tinymce.init({
-        selector,
-        menubar: false,
-        plugins: 'link image lists code',
-        toolbar: 'undo redo | bold italic furigana | bullist numlist | link image | code',
-        height: 150,
-        extended_valid_elements: 'ruby,rt,rp',
-        setup: function(editor) {
-          editor.ui.registry.addButton('furigana', {
-            text: 'Furigana',
-            onAction: function() {
-              editor.windowManager.open({
-                title: 'Add Furigana',
-                body: {
-                  type: 'panel',
-                  items: [{
-                      type: 'input',
-                      name: 'kanji',
-                      label: 'Kanji'
-                    },
-                    {
-                      type: 'input',
-                      name: 'reading',
-                      label: 'Furigana'
-                    }
-                  ]
-                },
-                buttons: [{
-                    type: 'cancel',
-                    text: 'Close'
-                  },
-                  {
-                    type: 'submit',
-                    text: 'Insert',
-                    primary: true
-                  }
-                ],
-                onSubmit: function(api) {
-                  const data = api.getData();
-                  // Insert ruby annotation
-                  editor.insertContent(
-                    `<ruby>${data.kanji}<rt>${data.reading}</rt></ruby>`
-                  );
-                  api.close();
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-
-
     function generateQuestions(qty) {
-      // Remove all existing TinyMCE editors
-      tinymce.remove();
-
       questionsContainer.innerHTML = "";
 
       for (let i = 0; i < qty; i++) {
         const questionBlock = `
-        <h3 class="text-xl font-semibold p-[12px] rounded-t-lg text-black bg-indigo-300 mt-5">
-          Create Question ${i + 1}
-        </h3>
-        <div class="p-8 rounded-b-lg bg-white border mb-5">
-          <div class="grid grid-cols-4 gap-4">
-            <div class="grid grid-cols-1 gap-3">
+          <h3 class="text-xl font-semibold p-[12px] rounded-t-lg text-black bg-indigo-300 mt-5">
+            Create Question ${i + 1}
+          </h3>
+          <div class="p-8 rounded-b-lg bg-white border mb-5">
+            <div class="grid grid-cols-4 gap-4">
               <div class="space-y-2">
                 <label class="block font-semibold">Proficiency Level</label>
-                <select name="questions[${i}][proficiency_level]" class="bg-white drop-shadow-md text-sm border rounded px-3 py-2 w-full">
+                <select name="questions[${i}][proficiency_level]" class="bg-white drop-shadow-md text-sm border rounded px-3 py-2">
                   <option value="n4">N4</option>
                   <option value="n5">N5</option>
                 </select>
               </div>
-  
+
               <div class="space-y-2">
                 <label class="block font-semibold">Each Question Type</label>
-                <select name="questions[${i}][question_type]"
-                  class="questionType bg-white drop-shadow-md text-sm border rounded px-3 py-2 w-full"
-                  data-index="${i}">
+                <select name="questions[${i}][question_type]" class="questionType bg-white drop-shadow-md text-sm border rounded px-3 py-2">
                   <option value="text" selected>Text</option>
                   <option value="image">Image</option>
                 </select>
               </div>
+
+              <div class="space-y-2 col-span-2">
+                <label class="block font-semibold">Question</label>
+                <input name="questions[${i}][question]" type="text" placeholder="Enter question"
+                  class="questionInput bg-white drop-shadow-md text-sm border rounded px-3 py-2 w-full" />
+              </div>
             </div>
-            <div class="space-y-2 col-span-3">
-              <label class="block font-semibold">Question</label>
-              <div class="questionInputWrapper" data-index="${i}">
-                <textarea id="question-${i}" name="questions[${i}][question]" class="tinymce"></textarea>
+
+            <div class="p-6 rounded-lg border bg-white mt-[30px] space-y-7">
+              <h3 class="font-semibold rounded text-black">Create Options (Choose the correct answer)</h3>
+              <div class="grid grid-cols-2 gap-4">
+                ${[1, 2, 3, 4].map(opt => `
+                  <div class="flex items-center gap-1">
+                    <input type="radio" name="questions[${i}][answer]" value="${opt}" class="size-5">
+                    <input type="text" name="questions[${i}][options][${opt}]" placeholder="Option ${opt}"
+                      class="bg-white text-sm border rounded px-3 py-2 w-full">
+                  </div>`).join('')}
               </div>
             </div>
           </div>
- 
-          <div class="p-6 rounded-lg border bg-white mt-[30px] space-y-7">
-            <h3 class="font-semibold rounded text-black">Create Options (Choose the correct answer)</h3>
-            <div class="grid grid-cols-2 gap-4">
-              ${[1,2,3,4].map(opt => `
-                <div class="flex items-center gap-1">
-                  <input type="radio" name="questions[${i}][answer]" value="${opt}" class="size-5">
-                  <div class="optionWrapper w-full" data-q="${i}" data-opt="${opt}">
-                    <textarea id="question-${i}-option-${opt}" name="questions[${i}][options][${opt}]" class="tinymce"></textarea>
-                  </div>
-                </div>`).join('')}
-            </div>
-          </div>
-        </div>
-      `;
+        `;
         questionsContainer.insertAdjacentHTML("beforeend", questionBlock);
       }
 
-      // Init TinyMCE for all question & option textareas
-      initTiny('.tinymce');
-
-      // Add change listener for switching Text ↔ Image
       document.querySelectorAll(".questionType").forEach((selectEl) => {
-        selectEl.addEventListener("change", function() {
-          const index = this.dataset.index;
-          const wrapper = document.querySelector(`.questionInputWrapper[data-index="${index}"]`);
-          wrapper.innerHTML = "";
-
+        selectEl.addEventListener("change", function () {
+          const inputEl = this.closest(".grid").querySelector(".questionInput");
           if (this.value === "image") {
-            if (tinymce.get(`question-${index}`)) {
-              tinymce.get(`question-${index}`).remove();
-            }
-            wrapper.innerHTML = `<input type="file" name="questions[${index}][question]" class="bg-white drop-shadow-md text-sm border rounded px-3 py-2 w-[250px]" />`;
+            inputEl.type = "file";
+            inputEl.placeholder = "";
           } else {
-            wrapper.innerHTML = `<textarea id="question-${index}" name="questions[${index}][question]" class="tinymce"></textarea>`;
-            initTiny(`#question-${index}`);
+            inputEl.type = "text";
+            inputEl.placeholder = "Enter question";
           }
         });
       });
     }
 
-    // Event listeners
     questionTypeSelect.addEventListener("change", (e) => {
       if (e.target.value === "multiple") {
         questionQuantityWrapper.style.display = "block";
@@ -262,7 +174,6 @@
       generateQuestions(parseInt(e.target.value));
     });
 
-    // Init with 1 question
     generateQuestions(1);
   });
 </script>

@@ -8,26 +8,16 @@
         <h3 class="text-md m-0">All Questions</h3>
 
         <div class="flex gap-10">
-            <form action="{{ route('mock-tests.question.list') }}" method="GET" class="d-flex align-items-center">
-                <select name="section_id" class="form-select me-2" style="width:200px;" onchange="this.form.submit()">
-                    <option value="all" {{ request('section_id') == 'all' ? 'selected' : '' }}>All Questions</option>
-                    @foreach($sections as $section)
-                        <option value="{{ $section->id }}" {{ request('section_id') == $section->id ? 'selected' : '' }}>
-                            {{ $section->title }}
-                        </option>
-                    @endforeach
-                </select>
+            <form action="" method="GET" class="">
+                <div class="dropdown rounded" style="width: 150px; background-color: hsla(199, 76%, 75%, 0.841);color:#04070a">
+                    <a href="{{ route('mock-tests.question-setup.form') }}">
+                        <p class="cursor-pointer bg-blue-800 text-center text-white p-2 rounded hover:bg-blue-600">
+                            Create New
+                        </p>
+                    </a>
+                </div>
             </form>
-        
-            <div class="dropdown rounded" style="width: 150px; background-color: hsla(199, 76%, 75%, 0.841);color:#04070a">
-                <a href="{{ route('mock-tests.question-setup.form') }}">
-                    <p class="cursor-pointer bg-blue-800 text-center text-white p-2 rounded hover:bg-blue-600">
-                        Create New
-                    </p>
-                </a>
-            </div>
         </div>
-        
     </div>
 
     <div class="">
@@ -45,33 +35,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($questions as $question)
+                    @foreach($questions as $question)
                     <tr>
                         <td>{{ $question->id }}</td>
-                        @if($question->mockTestQuestionGroup->group_type==='audio')
-                        <td>
-                            <audio controls style="width:250px; height:25px;">
-                                <source src="{{ $question->mockTestQuestionGroup->content }}" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                            @if($question->type !=='image')
-                            {!! $question->title !!}
-                            @endif
-                        </td>
-
-                        @else
                         <td>{!! $question->title !!}</td>
-
-                        @endif
-                        <td>{{ $question->section->title }} {{ $question->mockTestQuestionGroup->set_no>0 ? '- S'.$question->mockTestQuestionGroup->set_no :'' }}</td>
+                        <td>{{ $question->section->title }}</td>
                         <td>{{ $question->type }}</td>
                         <td>{{ $question->proficiency_level }}</td>
                         <td>{{ $question->mockTestQuestionGroup->type }}</td>
-                        
                         <td>
                             <div class="flex gap-2">
                                 <!-- Edit Button -->
-                                <a href="{{ route('mock-tests.edit.question', $question->id) }}"
+                                <a href="{{ route('mock-tests.edit.question', $question->id) }}" 
                                     class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-green-500 text-white hover:bg-green-600 shadow-md transition">
                                     Edit
                                 </a>
@@ -80,34 +55,31 @@
                                 <form action="{{ route('mock-tests.question.delete', $question->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this question?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit"
+                                    <button type="submit" 
                                         class="px-4 py-2 rounded-xl text-sm font-medium bg-red-500 text-white hover:bg-red-600 shadow-md transition">
                                         Delete
                                     </button>
                                 </form>
 
                                 @else
-                                <button type="submit"
+                                <button type="submit" 
                                     class="px-4 py-2 rounded-xl text-sm font-medium bg-gray-300 text-gray-500 shadow-md transition cursor-not-allowed" disabled>
                                     Delete
                                 </button>
                                 @endif
                             </div>
+                          
                         </td>
+                        
+
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-4">
-                            No questions found for this section.
-                        </td>
-                    </tr>
-                @endforelse
+                    @endforeach
                 </tbody>
             </table>
-            <div class="mt-4 flex justify-center">
-                {{ $questions->links() }}
-            </div>
-
+        <div class="mt-4 flex justify-center">
+            {{ $questions->links() }}
+        </div>
+        
         </div>
     </div>
 

@@ -38,7 +38,7 @@
         <div class="mt-4">
             <label for="sample_question" class="form-label fw-semibold">Sample Question</label>
             <textarea
-                id="editor"
+                id="content"
                 name="sample_question"
                 class="form-control form-control-lg shadow-sm rounded-2"
                 placeholder="Write the sample question here...">{{ old('sample_question', $section->sample_question) }}</textarea>
@@ -64,45 +64,3 @@
 @endsection
 
 
-@push('js')
-
-<script type="text/javascript">
-tinymce.init({
-  selector: '#editor',
-  menubar: false,
-  toolbar: 'bold italic furigana code',
-  extended_valid_elements: 'ruby,rt,rp',
-  setup: function (editor) {
-    editor.ui.registry.addButton('furigana', {
-      text: 'Furigana',
-      onAction: function () {
-        editor.windowManager.open({
-          title: 'Add Furigana',
-          body: {
-            type: 'panel',
-            items: [
-              { type: 'input', name: 'kanji', label: 'Kanji' },
-              { type: 'input', name: 'reading', label: 'Furigana' }
-            ]
-          },
-          buttons: [
-            { type: 'cancel', text: 'Close' },
-            { type: 'submit', text: 'Insert', primary: true }
-          ],
-          onSubmit: function (api) {
-            const data = api.getData();
-            // Insert ruby annotation
-            editor.insertContent(
-              `<ruby>${data.kanji}<rt>${data.reading}</rt></ruby>`
-            );
-            api.close();
-          }
-        });
-      }
-    });
-  }
-});
-
-
-</script>
-@endpush
