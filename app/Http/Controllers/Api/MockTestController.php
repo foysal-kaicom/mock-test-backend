@@ -300,6 +300,7 @@ class MockTestController extends Controller
             ->where('status', 'confirmed')
             ->where('payment_status', 'success')
             ->with('package')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         if ($activeSubscriptions->isEmpty()) {

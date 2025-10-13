@@ -50,6 +50,14 @@
             </div>
         </div>
 
+        <!-- Free -->
+        <div class="col-md-12 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_free" id="isFree" {{ old('is_free') ? 'checked' : '' }}>
+                <label for="isFree" class="form-check-label fw-semibold">Free Package</label>
+            </div>
+        </div>
+
         <!-- Order -->
         <div class="col-md-3">
             <label class="form-label fw-semibold">Sequence</label>

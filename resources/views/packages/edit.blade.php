@@ -36,7 +36,7 @@
             </div>
 
             <!-- Home -->
-            <div class="col-md-3 d-flex align-items-center">
+            <div class="col-md-12 d-flex align-items-center">
                 <div class="form-check mt-4">
                     <input class="form-check-input" type="checkbox" name="is_home" id="isHome"
                         {{ $package->is_home ? 'checked' : '' }}>  
@@ -45,11 +45,20 @@
             </div>
 
             <!-- Popular -->
-            <div class="col-md-3 d-flex align-items-center">
+            <div class="col-md-12 d-flex align-items-center">
                 <div class="form-check mt-4">
                     <input class="form-check-input" type="checkbox" name="is_popular" id="isPopular"
                         {{ $package->is_popular ? 'checked' : '' }}>
                     <label for="isPopular" class="form-check-label fw-semibold">Popular Package</label>
+                </div>
+            </div>
+
+            <!-- Free -->
+            <div class="col-md-12 d-flex align-items-center">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" name="is_free" id="isFree"
+                        {{ $package->is_free ? 'checked' : '' }}>
+                    <label for="isFree" class="form-check-label fw-semibold">Free Package</label>
                 </div>
             </div>
 

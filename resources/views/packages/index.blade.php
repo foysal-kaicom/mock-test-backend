@@ -38,7 +38,7 @@
                     <td class="px-4 py-1">{{ $package->short_description }}</td> 
                     <td class="px-4 py-1">{{ $package->order }}</td>
                     <td class="px-4 py-1"> 
-                        @if($package->status) 
+                        @if($package->status)
                             <span class="badge bg-success">Active</span> 
                         @else 
                             <span class="badge bg-secondary">Inactive</span> 

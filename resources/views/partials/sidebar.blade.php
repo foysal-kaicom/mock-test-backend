@@ -210,10 +210,10 @@
                 <i class="fas fa-user text-indigo-500 text-base"></i>
                 <p class="m-0 text-sm">User</p>
             </a>
-            {{-- <a href="{{ route('business-settings.edit', 1) }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            <a href="{{ route('business-settings.edit', 1) }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fas fa-briefcase text-indigo-500 text-base"></i>
                 <p class="m-0 text-sm">Business Setting</p>
-            </a> --}}
+            </a>
             <!-- <a href="/yo" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fas fa-key text-indigo-500 text-base"></i>
                 <p class="m-0 text-sm">Change Password</p>

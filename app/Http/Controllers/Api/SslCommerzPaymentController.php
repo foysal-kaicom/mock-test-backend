@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 use DB;
 use App\Models\Exam;
 use App\Models\Booking;
+use App\Models\Package;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Models\UserSubscription;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\UserSubscriptionDetails;
 use App\Notifications\CandidateNotification;
 use App\Library\SslCommerz\SslCommerzNotification;
 
@@ -30,6 +32,10 @@ class SslCommerzPaymentController extends Controller
         if($bookingData->title == 'subscription'){
             $post_data['tran_id'] = $bookingData->tran_id;
             $post_data['title'] = 'subscription';
+        }
+        else if($bookingData->title == 'renewal'){
+            $post_data['tran_id'] = $bookingData->tran_id; // tran_id must be unique
+            $post_data['title'] = 'renewal';
         }
         else{
             $post_data['tran_id'] = $bookingData->id; // tran_id must be unique
@@ -89,26 +95,34 @@ class SslCommerzPaymentController extends Controller
 
     public function success(Request $request)
     {
-
         $tran_id = $request->input('tran_id'); // booking id
         $amount = $request->input('amount');
         $currency = $request->input('currency');
         $title = $request->input('title');
-        // dd($request->all());
+
         $sslc = new SslCommerzNotification();
 
-        #Check order status in order tabel against the transaction id or order id.
+        $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
 
-        if($title == 'subscription'){
-            $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
-            // dd($bookingData);
-            //  dd($bookingData->id);
-        }
-        else{
-            // $bookingData = UserSubscription::find($tran_id);
-            $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
-            // dd($bookingData);
-        }
+
+
+        // if($title == 'subscription'){
+        //     $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+        //     // dd($bookingData);
+        //     dd("1");
+        //     //  dd($bookingData->id);
+        // }
+        // else if($title == 'renewal'){
+        //     $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+        //     dd("2");
+        // }
+        // else{
+        //     // $bookingData = UserSubscription::find($tran_id);
+        //     $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+        //     dd("3");
+        //     // dd($bookingData);
+        // }
+        
 
         // $successPath = str_replace('{booking_id}', $bookingData->id, config('app.frontend.payment_success') );
         $successPath = config('app.frontend.payment_success') . '?subscription_id=' . $subscriptionData->id . '&amount=' . $subscriptionData->total_payable . '&tran_id=' . $subscriptionData->tran_id;
@@ -133,10 +147,19 @@ class SslCommerzPaymentController extends Controller
                         'status' => 'confirmed'
                     ]
                 );
+                $package = Package::with('package_details.exam')->find($subscriptionData->package_id);
+                foreach ($package->package_details as $detail) {
+                    UserSubscriptionDetails::create([
+                        'package_details_id'   => $detail->id,
+                        'user_subscription_id' => $subscriptionData->id,
+                        'exam_id'              => $detail->exam_id,
+                        'max_exam_attempt'     => $detail->max_exam_attempt,
+                    ]);
+                }
 
                 //notify candidate
                 $data=[
-                    'title'=>"Booking Success !",
+                    'title'=>"Subscription Successful!",
                     // 'message'=>"Your booking for exam: ". $bookingData->exam->title ." has been successful. Please Check your profile. ",
                     'message'=>"Your payment has been successful. Please Check your profile. ",
                     'url'=>'',
@@ -161,7 +184,6 @@ class SslCommerzPaymentController extends Controller
 
     public function paymentTrack($bookingData, $requestData)
     {
-        // dd($bookingData);
         Payment::create([
             // ($requestData['title'] ?? '') == "subscription" ? 'package_id' : 'booking_id' => $bookingData->id,
             'subscription_id'      => $bookingData->id, // existing bookings.id
@@ -176,63 +198,44 @@ class SslCommerzPaymentController extends Controller
 
     public function fail(Request $request)
     {
+        // $successPath = config('app.frontend.payment_success') . '?subscription_id=' . $subscriptionData->id . '&amount=' . $subscriptionData->total_payable . '&tran_id=' . $subscriptionData->tran_id;
+        // // dd($successPath);
+        // $failedPath  = str_replace('{booking_id}', $subscriptionData->id, config('app.frontend.payment_failed'));
+        // $baseUrl     = config('app.frontend.url');
+        $tran_id = $request->input('tran_id');
+
+        $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
+
+        $failedPath = config('app.frontend.payment_failed') . '?subscription_id=' . $request->input('subscription_id');
         $baseUrl     = config('app.frontend.url');
-        $tran_id = $request->input('tran_id'); // booking id
-        $failedPath  = str_replace('{booking_id}', $tran_id, config('app.frontend.payment_failed'));
-        $title = $request->input('title');
-
-
-        #Check order status in order tabel against the transaction id or order id.
-        // $bookingData = Booking::find($tran_id);
-        if($title == 'subscription'){
-            $bookingData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
-            $bookingData->update([
-                'payment_status' => UserSubscription::FAILED,
-                'status' => UserSubscription::CANCELLED,
-            ]);
-        }
-        else{
-            $bookingData = Booking::find($tran_id);
-            $bookingData->update([
-                'payment_status' => Booking::FAILED,
-                'status' => Booking::CANCELLED,
-            ]);
-        }
-
         
-        $this->paymentTrack($bookingData, $request->all());
+        $subscriptionData->update([
+            'payment_status' => UserSubscription::FAILED,
+            'status' => UserSubscription::CANCELLED,
+        ]);
+        
+        $this->paymentTrack($subscriptionData, $request->all());
 
-        return redirect()->away($baseUrl . $failedPath);
+        return redirect()->away($failedPath);
+
     }
 
     public function cancel(Request $request)
     {
-        $baseUrl     = config('app.frontend.url');
-        $tran_id = $request->input('tran_id'); // booking id
-        $failedPath  = str_replace('{booking_id}', $tran_id, config('app.frontend.payment_cancel'));
-        $title = $request->input('title');
-
-
-        #Check order status in order tabel against the transaction id or order id.
-        if($title == 'subscription'){
-            $bookingData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
-            $bookingData->update([
-                'payment_status' => UserSubscription::CANCELLED,
-                'status' => UserSubscription::CANCELLED,
-            ]);
-        }
-        else{
-        $bookingData = Booking::find($tran_id);
-        $bookingData->update(
-            [
-                'payment_status' => Booking::CANCELLED,
-                'status' => Booking::CANCELLED,
-            ]);
-        }
+        $tran_id = $request->input('tran_id');
         
-        $this->paymentTrack($bookingData, $request->all());
+        $subscriptionData = UserSubscription::where('tran_id', $tran_id)->firstOrFail();
 
-        return redirect()->away($baseUrl . $failedPath);
+        $failedPath = config('app.frontend.payment_cancel') . '?subscription_id=' . $request->input('subscription_id');
+        
+        $subscriptionData->update([
+            'payment_status' => UserSubscription::FAILED,
+            'status' => UserSubscription::CANCELLED,
+        ]);
+        
+        $this->paymentTrack($subscriptionData, $request->all());
+
+        return redirect()->away($failedPath);
     }
 
     public function ipn(Request $request)

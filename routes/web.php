@@ -72,6 +72,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('{id}/toggle-status', [ExamController::class, 'toggleStatus'])->name('toggleStatus');
     });
 
+    Route::group(['prefix' => 'business-settings', 'as' => 'business-settings.', 'module' => 'Business-Settings'], function () {
+        Route::get('/edit/{id}', [BusinessSettingController::class, 'showEditPage'])->name('edit');
+        Route::post('/general', [BusinessSettingController::class, 'updateGeneralInfo'])->name('general');
+        Route::post('/legal', [BusinessSettingController::class, 'updateLegalInfo'])->name('legal');
+        Route::post('/social', [BusinessSettingController::class, 'updateSocialLinks'])->name('social');
+        Route::post('/policies', [BusinessSettingController::class, 'updatePolicies'])->name('policies');
+    });
+
 
     Route::group(['prefix' => 'payment', 'as' => 'payment.', 'module' => 'payment'], function () {
         Route::get('/', [PaymentController::class, 'list'])->name('list');

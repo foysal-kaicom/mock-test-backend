@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/subscriptions', [PackageController::class, 'show']);
     Route::post('/subscribe', [PackageController::class, 'subscribe']);
+    
 
 
     Route::get('/settings', [HomeController::class, 'settingsData']);
@@ -52,6 +53,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/update-password', [CandidateController::class, 'updatePassword']);
             Route::get('/verify-phone', [CandidateController::class, 'verifyPhoneNumber']);
             Route::post('/post-verify-phone', [CandidateController::class, 'postVerifyPhoneNumber']);
+
+            Route::post('/subscription-renew', [PackageController::class, 'renewSubscription']);
         });
 
         Route::group(['prefix' => 'exam', 'as' => 'exam.'], function () {
