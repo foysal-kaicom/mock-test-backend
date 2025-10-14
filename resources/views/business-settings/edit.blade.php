@@ -11,7 +11,15 @@
             <h3 class="fs-5">Edit Business Settings</h3>
         </div>
         <div class="row g-4 p-4">
-
+@if ($errors->any())
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
             <!-- Form Fields -->
             <div class="col-md-9">
                 <div class="row g-3">
@@ -68,7 +76,7 @@
             </div>
 
               <!-- Image Upload -->
-              <div class="col-md-3 text-center">
+              {{-- <div class="col-md-3 text-center">
                 <div class="position-relative border rounded bg-light  d-flex" style="left: 40px; height:160px; width:200px">
                     <img id="imagePreview" src="{{ $bsData->logo ? asset($bsData->logo) : asset('imagePH.png') }}" alt="Display Image" class="w-100 h-100 object-fit-cover rounded"/>
                 </div>
@@ -77,7 +85,26 @@
                 @error('logo')
                     <div class="text-danger"></div>
                 @enderror
+            </div> --}}
+            <div class="col-md-3 text-center">
+                <div class="position-relative border rounded bg-light d-flex" style="left: 40px; height:160px; width:200px">
+                    <img id="imagePreview" 
+                        src="{{ $bsData->logo ? asset('storage/' . $bsData->logo) : asset('imagePH.png') }}" 
+                        alt="Display Image" 
+                        class="w-100 h-100 object-fit-cover rounded"/>
+                </div>
+
+                <input type="file" accept="image/*" id="fileInput" name="logo" class="d-none" />
+                <label for="fileInput" class="position-relative btn btn-dark mt-2" style="left:15px;width:200px">
+                    Choose Logo
+                </label>
+
+                @error('logo')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
             </div>
+
+
                 <!-- Submit Button -->
                 <div class="d-flex justify-content-end mt-4">
                     <button type="submit" class="btn btn-primary w-25">Save</button>

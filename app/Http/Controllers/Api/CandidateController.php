@@ -206,7 +206,7 @@ class CandidateController extends Controller
 
                 Mail::send([], [], function ($message) use ($candidate) {
                     $message->to($candidate->email)
-                        ->subject("JPT-BD Phone verification code.")
+                        ->subject("Phone verification code.")
                         ->html('<h1>Welcome!</h1><p>Your mobile OTP is: ' . $candidate->otp . '.</p>');
                 });
 

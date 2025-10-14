@@ -251,20 +251,14 @@ class MockTestController extends Controller
 
 
 
-    // public function getTestResult(){
-    //     $id = Auth::guard('candidate')->id();
-    //     $testResults = MockTestRecords::where('candidate_id', $id)->get();
-    //     // $testResults = MockTestResultResource::collection(MockTestRecords::where('candidate_id', $id)->get());//need to use later
-       
-    //     return $this->responseWithSuccess($testResults, "Mock test results fetched.");
-    // }
+
 
     public function getTestResult()
     {
         try {
             $candidateId = Auth::guard('candidate')->id();
 
-            // ✅ Load candidate name and related details with eager loading
+            // Load candidate name and related details with eager loading
             $testResults = MockTestRecords::with(['candidate:id,first_name', 'details.module:id,name'])
                 ->where('candidate_id', $candidateId)
                 ->get()

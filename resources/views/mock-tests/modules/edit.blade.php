@@ -34,18 +34,18 @@
                         @error('exam_id') <div class="text-danger small">{{ $message }}</div> @enderror
                     </div>
 
-                    <!-- Slug -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Slug</label>
-                        <input type="text" name="slug" value="{{ old('slug', $mockTestModule->slug) }}" class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter slug" />
-                        @error('slug') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
-
                     <!-- Name -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Module Name</label>
                         <input type="text" name="name" value="{{ old('name', $mockTestModule->name) }}" class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter module name" />
                         @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
+                    </div>
+
+                    <!-- Slug -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Slug</label>
+                        <input type="text" name="slug" value="{{ old('slug', $mockTestModule->slug) }}" class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter slug" />
+                        @error('slug') <div class="text-danger small">{{ $message }}</div> @enderror
                     </div>
 
                     <!-- Status -->
@@ -71,4 +71,12 @@
     </form>
 </div>
 
+<script>
+//create slug from name
+    document.querySelector('input[name="name"]').addEventListener('input', function() {
+        let name = this.value;
+        let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        document.querySelector('input[name="slug"]').value = slug;
+    });
+</script>
 @endsection

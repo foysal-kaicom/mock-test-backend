@@ -19,8 +19,8 @@ class BusinessSettingsSeeder extends Seeder
             ['id' => 1], // Assuming you want to update the record with ID 1
             [
                 // Basic Info
-                'business_name' => 'JPTBD',
-                'business_email' => 'xyz@jptbd.com',
+                'business_name' => 'Mock Test',
+                'business_email' => 'xyz@mocktest.com',
                 'business_phone' => '1234567890',
                 'bkash_number' => '01778899955',
                 'certificate_amount' => '510.00',

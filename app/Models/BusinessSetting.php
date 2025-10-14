@@ -36,4 +36,13 @@ class BusinessSetting extends Model
     protected $casts = [
         'legal_docs' => 'json',
     ];
+
+    
+    protected $appends = ['logo_url'];
+
+    public function getLogoUrlAttribute()
+    {
+        return $this->logo ? asset('storage/' . $this->logo) : null;
+    }
+
 }

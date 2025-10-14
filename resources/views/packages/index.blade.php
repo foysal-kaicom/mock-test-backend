@@ -20,7 +20,7 @@
         <table class="table table-striped table-hover border align-middle"> 
             <thead> 
                 <tr> 
-                    <th scope="col" class="text-uppercase text-secondary small px-4 py-3">ID</th> 
+                    {{-- <th scope="col" class="text-uppercase text-secondary small px-4 py-3">ID</th>  --}}
                     <th scope="col" class="text-secondary small px-4 py-3">Name</th> 
                     <th scope="col" class="text-secondary small px-4 py-3">Price</th> 
                     <th scope="col" class="text-secondary small px-4 py-3">Details</th> 
@@ -32,7 +32,7 @@
             <tbody> 
                 @foreach($packages as $package) 
                 <tr> 
-                    <td class="px-4 py-1">{{ $package->id }}</td> 
+                    {{-- <td class="px-4 py-1">{{ $package->id }}</td>  --}}
                     <td class="px-4 py-1">{{ $package->name }}</td> 
                     <td class="px-4 py-1">{{ $package->price }}</td> 
                     <td class="px-4 py-1">{{ $package->short_description }}</td> 

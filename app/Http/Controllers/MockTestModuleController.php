@@ -26,7 +26,7 @@ class MockTestModuleController extends Controller
             'exam_id' => 'nullable|exists:exams,id',
             'slug' => 'required|unique:mock_test_modules,slug',
             'name' => 'required|string',
-            'status' => 'required|in:active,disabled',
+            // 'status' => 'required|in:active,disabled',
         ]);
 
         MockTestModule::create($request->all());

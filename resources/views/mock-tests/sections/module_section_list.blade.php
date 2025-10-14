@@ -4,10 +4,23 @@
 
 <section class="bg-white rounded overflow-hidden">
     <!-- Section Header -->
-    <div class="p-2 px-4 bg-indigo-300 flex justify-between items-center">
-        <h3 class="font-semibold text-lg">Mock Test Modules & Sections</h3>
+    {{-- <div class="p-2 px-4 bg-indigo-300 flex justify-between items-center">
+        <h3 class="font-semibold text-lg"></h3>
         <!-- Optionally, you could have a button to add new modules here -->
+    </div> --}}
+
+
+
+
+    <div class="p-2 px-4 d-flex justify-content-between align-items-center bg-indigo-300">
+        <h3 class="text-lg font-semibold">Mock Test Modules & Sections</h3>
+        <a href="{{ route('mock-tests.section.create') }}" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-sky-500 text-white hover:bg-sky-600 transition">
+            <i class="fa-solid fa-plus"></i> Create New Section
+        </a>
     </div>
+
+
+
 
     <style>
         .table {

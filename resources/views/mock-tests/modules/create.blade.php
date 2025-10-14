@@ -9,18 +9,26 @@
             Create Mock Test Module
         </h3>
     </div>
-
+    @if ($errors->any())
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <!-- Form -->
     <form action="{{ route('mock-test-modules.store') }}" method="POST" class="p-4">
         @csrf
 
         <div class="row g-4">
             <!-- Form Fields -->
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="row g-3">
 
                     <!-- Exam Selection -->
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label class="form-label fw-semibold">Select Exam</label>
                         <select name="exam_id" class="form-control form-control-lg shadow-sm rounded-2">
                             <option value="">-- Select Exam --</option>
@@ -33,29 +41,29 @@
                         @error('exam_id') <div class="text-danger small">{{ $message }}</div> @enderror
                     </div>
 
-                    <!-- Slug -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Slug</label>
-                        <input type="text" name="slug" value="{{ old('slug') }}" class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter slug" />
-                        @error('slug') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
-
                     <!-- Name -->
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label class="form-label fw-semibold">Module Name</label>
                         <input type="text" name="name" value="{{ old('name') }}" class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter module name" />
                         @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
                     </div>
 
+                    <!-- Slug -->
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Slug</label>
+                        <input type="text" name="slug" value="{{ old('slug') }}" class="form-control form-control-lg shadow-sm rounded-2" placeholder="Enter slug" />
+                        @error('slug') <div class="text-danger small">{{ $message }}</div> @enderror
+                    </div>
+
                     <!-- Status -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label class="form-label fw-semibold">Status</label>
                         <select name="status" class="form-control form-control-lg shadow-sm rounded-2">
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="disabled" {{ old('status') == 'disabled' ? 'selected' : '' }}>Disabled</option>
                         </select>
                         @error('status') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
+                    </div> --}}
 
                 </div>
             </div>
@@ -69,5 +77,15 @@
         </div>
     </form>
 </div>
+
+<script>
+//create slug from name
+    document.querySelector('input[name="name"]').addEventListener('input', function() {
+        let name = this.value;
+        let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        document.querySelector('input[name="slug"]').value = slug;
+    }); 
+
+</script>
 
 @endsection

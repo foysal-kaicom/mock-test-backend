@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>JPTBD Login</title>
+    <title>Mock Test Login</title>
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
   </head>
   <body>
@@ -13,7 +13,6 @@
         <div class="row justify-content-center">
           <div class="col-md-8 col-lg-10">
             <div class="text-start text-secondary mb-4">
-              {{-- <h2 class="display-5 fw-medium text-center">JPTBD Login</h2> --}}
               <img src="{{ asset('logo/logo.png') }}" alt="" style="width:250px; position:relative; top:-20px; left:70px">
               <p class="mt-1">Sign in to your account</p>
             </div>

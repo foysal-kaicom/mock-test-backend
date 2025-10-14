@@ -37,16 +37,27 @@ return [
 
     'mailers' => [
 
+        // 'smtp' => [
+        //     'transport' => 'smtp',
+        //     'scheme' => env('MAIL_SCHEME'),
+        //     'url' => env('MAIL_URL'),
+        //     'host' => env('MAIL_HOST', 'mail.mocktest.com'),
+        //     'port' => env('MAIL_PORT', 587),
+        //     'username' => env('MAIL_USERNAME','mocktest@mocktest.com'),
+        //     'password' => env('MAIL_PASSWORD','324tsfsdarfwryjWqdsfi^^'),
+        //     'timeout' => null,
+        //     'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        // ],
+
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
-            'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', 'mail.kaicomsol.com'),
-            'port' => env('MAIL_PORT', 587),
-            'username' => env('MAIL_USERNAME','jptbd@kaicomsol.com'),
-            'password' => env('MAIL_PASSWORD','VWEryjWqvc4&'),
+            'host' => env('MAIL_HOST', 'sandbox.smtp.mailtrap.io'),
+            'port' => env('MAIL_PORT', 25),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('MAIL_USERNAME'),
+            'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
 
         'ses' => [
@@ -111,8 +122,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'info@kaicomsol.com'),
-        'name' => env('MAIL_FROM_NAME', 'JPT Bangladesh'),
+        'address' => env('MAIL_FROM_ADDRESS', 'info@mocktest.com'),
+        'name' => env('MAIL_FROM_NAME', 'Mock Test Bangladesh'),
     ],
 
 ];

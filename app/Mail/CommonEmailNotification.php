@@ -29,7 +29,7 @@ class CommonEmailNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Notification from JPTBD',
+            subject: 'Notification from Mock Test',
         );
     }
 

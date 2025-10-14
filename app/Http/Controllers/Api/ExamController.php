@@ -11,7 +11,7 @@ class ExamController extends Controller
     public function list()
     {
         $exams=Exam::where('status',1)
-            ->orderBy('exam_date')
+            ->orderBy('id' ,'desc')
             ->take(12)
             ->get();
 

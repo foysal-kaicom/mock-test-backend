@@ -16,45 +16,45 @@ class Exam extends Model
     protected $fillable = [
         'name',
         'title',
-        'slug',
+        // 'slug',
         'description',
-        'exam_date',
-        'application_deadline',
-        'fee',
+        // 'exam_date',
+        // 'application_deadline',
+        // 'fee',
         'image',
-        'result_publish_date',
-        'start_time',
-        'end_time',
+        // 'result_publish_date',
+        // 'start_time',
+        // 'end_time',
         'created_by',
     ];
 
     protected $hidden = [];
 
-    protected $casts = [
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i', 
-        'fee' => 'decimal:2',
-    ];
+    // protected $casts = [
+    //     'start_time' => 'datetime:H:i',
+    //     'end_time' => 'datetime:H:i', 
+    //     'fee' => 'decimal:2',
+    // ];
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
     
-    public function getExamDateAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y');
-    }
+    // public function getExamDateAttribute($value)
+    // {
+    //     return Carbon::parse($value)->format('d-m-Y');
+    // }
 
-    public function getApplicationDeadlineAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y');
-    }
+    // public function getApplicationDeadlineAttribute($value)
+    // {
+    //     return Carbon::parse($value)->format('d-m-Y');
+    // }
 
-    public function getResultPublishDateAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y');
-    }
+    // public function getResultPublishDateAttribute($value)
+    // {
+    //     return Carbon::parse($value)->format('d-m-Y');
+    // }
 
     public function packageDetails()
     {

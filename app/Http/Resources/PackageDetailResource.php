@@ -19,7 +19,7 @@ class PackageDetailResource extends JsonResource
             'package_id' => $this->package_id,
             'exam_id' => $this->exam_id,
             'max_exam_attempt' => $this->max_exam_attempt,
-            'exam_name' => $this->exam->title ?? null, // safely handle missing exam
+            'exam_name' => $this->exam->title ?? null,
         ];
     }
 }

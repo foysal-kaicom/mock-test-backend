@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="cursor-pointer" data-toggle="cms">
+    {{-- <div class="cursor-pointer" data-toggle="cms">
         <div class="flex justify-between items-center py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
             <div class="flex items-center gap-2 font-medium">
                 <i class="fas fa-broom text-indigo-500 text-base"></i>
@@ -42,27 +42,35 @@
             <i class="fas fa-chevron-down text-gray-500 text-sm drop-arrow transition-transform duration-300 -rotate-90"></i>
         </div>
         <div class="mt-1 ml-3 pl-3 border-l border-gray-200 space-y-2 text-gray-600 hidden" data-target="cms">
-            {{-- <a href="{{ route('news.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            <a href="{{ route('news.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fas fa-newspaper text-indigo-500 text-base"></i>
                 <p class="m-0 text-sm">News or Blogs</p>
-            </a> --}}
-            {{-- <a href="{{ route('testimonials.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            </a>
+            <a href="{{ route('testimonials.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fa-solid fa-comment text-indigo-500 text-base"></i>
                 <p class="m-0 text-sm">Testimonials</p>
-            </a> --}}
-            {{-- <a href="{{ route('faq.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            </a>
+            <a href="{{ route('faq.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fas fa-question-circle text-indigo-500 text-base"></i>
                 <p class="m-0 text-sm">FAQ</p>
-            </a> --}}
+            </a>
         </div>
-    </div>
+    </div> --}}
+
 
     <div class="cursor-pointer">
         <a href="{{ route('exam.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-            <i class="fas fa-file-alt text-indigo-500 text-base"></i>
+            <i class="fas fa-tachometer-alt text-indigo-500 text-base"></i>
             <p class="font-medium text-sm">Exams</p>
         </a>
     </div>
+
+    {{-- <div class="cursor-pointer">
+        <a href="{{ route('exam.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            <i class="fas fa-file-alt text-indigo-500 text-base"></i>
+            <p class="font-medium text-sm"></p>
+        </a>
+    </div> --}}
 
     <div class="cursor-pointer">
         {{-- <a href="{{ route('center.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
@@ -71,7 +79,7 @@
         </a> --}}
     </div>
 
-    <div class="cursor-pointer" data-toggle="import">
+    {{-- <div class="cursor-pointer" data-toggle="import">
         <div class="flex justify-between items-center py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
             <div class="flex items-center gap-2 font-medium">
                 <i class="fa fa-cloud-download text-indigo-500 text-base"></i>
@@ -80,16 +88,16 @@
             <i class="fas fa-chevron-down text-gray-500 text-sm drop-arrow transition-transform duration-300 -rotate-90"></i>
         </div>
         <div class="mt-1 ml-3 pl-3 border-l border-gray-200 space-y-2 text-gray-600 hidden" data-target="import">
-            {{-- <a href="{{ route('booking.import') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            <a href="{{ route('booking.import') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fa-solid fa-file-arrow-down text-indigo-500 text-base"></i>
                     <p class="font-medium text-sm">Import Booking</p>
-            </a> --}}
-             {{-- <a href="{{ route('import.examinee.csv.view') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            </a>
+             <a href="{{ route('import.examinee.csv.view') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fa-solid fa-id-card text-indigo-500 text-base"></i>
                 <p class="font-medium text-sm">Examinee ID Import</p>
-            </a> --}}
+            </a>
         
-        {{-- <a href="{{ route('import.show') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+        <a href="{{ route('import.show') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
         <i class="fa-solid fa-file-arrow-down text-indigo-500 text-base"></i>
                 <p class="font-medium text-sm">Admit/Certificate</p>
             </a>
@@ -97,9 +105,9 @@
         <a href="{{ route('import.result.csv') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
         <i class="fa-solid fa-file-csv text-indigo-500 text-base"></i>
                 <p class="font-medium text-sm">Result</p>
-            </a> --}}
+            </a>
         </div>
-    </div>
+    </div> --}}
 
     
 
@@ -111,12 +119,12 @@
     </div>
 
 
-    <div class="cursor-pointer">
+    {{-- <div class="cursor-pointer">
         <a href="{{ route('payment.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
             <i class="fa-solid fa-credit-card text-indigo-500 text-base"></i>
             <p class="font-medium text-sm">Payments</p>
         </a>
-    </div>
+    </div> --}}
 
     <div class="cursor-pointer">
         {{-- <a href="{{ route('agents.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
@@ -158,7 +166,7 @@
 
              <a href="{{ route('mock-tests.module-section.info') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
                 <i class="fa-solid fa-cubes-stacked text-indigo-500 text-base"></i>
-                <p class="font-medium text-sm">Modules & Sections</p>
+                <p class="font-medium text-sm">Sections</p>
             </a>
         
             <a href="{{ route('mock-tests.question.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
@@ -167,7 +175,7 @@
             </a>
 
             <a href="{{ route('mock-tests.reports.list') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-                <i class="fa-regular fa-circle-check text-indigo-500 text-base"></i>
+                <i class="fa-solid fa-chart-line text-indigo-500 text-base"></i>
                 <p class="font-medium text-sm">Mock Test Reports</p>
             </a>
 
@@ -192,6 +200,28 @@
             <p class="font-medium text-sm">Certificates</p>
         </a> --}}
     </div>
+
+    <!-- Packages -->
+    <div class="cursor-pointer" data-toggle="packages">
+        <div class="flex justify-between items-center py-2 px-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+            <div class="flex items-center gap-2 font-medium">
+                <i class="fa-solid fa-box-open text-indigo-500"></i>
+                <p class="text-sm">Packages</p>
+            </div>
+            <i class="fas fa-chevron-down text-gray-500 text-sm drop-arrow transition-transform duration-300 -rotate-90"></i>
+        </div>
+        <div class="ml-5 pl-3 border-l border-gray-200 mt-1 space-y-2 text-gray-600 hidden" data-target="packages">
+            <a href="{{ route('packages.index') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+                <i class="fa-solid fa-list text-indigo-500"></i>
+                <p class="text-sm">All Packages</p>
+            </a>
+            <a href="{{ route('packages.create') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+                <i class="fa-solid fa-plus text-indigo-500"></i>
+                <p class="text-sm">Add Package</p>
+            </a>
+        </div>
+    </div>
+
 
     <div class="cursor-pointer" data-toggle="account-settings">
         <div class="flex justify-between items-center py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
@@ -220,26 +250,7 @@
             </a> -->
         </div>
     </div>
-    <!-- Packages -->
-    <div class="cursor-pointer" data-toggle="packages">
-        <div class="flex justify-between items-center py-2 px-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-            <div class="flex items-center gap-2 font-medium">
-                <i class="fa-solid fa-box-open text-indigo-500"></i>
-                <p class="text-sm">Packages</p>
-            </div>
-            <i class="fas fa-chevron-down text-gray-500 text-sm drop-arrow transition-transform duration-300 -rotate-90"></i>
-        </div>
-        <div class="ml-5 pl-3 border-l border-gray-200 mt-1 space-y-2 text-gray-600 hidden" data-target="packages">
-            <a href="{{ route('packages.index') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-                <i class="fa-solid fa-list text-indigo-500"></i>
-                <p class="text-sm">All Packages</p>
-            </a>
-            <a href="{{ route('packages.create') }}" class="menu-link flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-                <i class="fa-solid fa-plus text-indigo-500"></i>
-                <p class="text-sm">Add Package</p>
-            </a>
-        </div>
-    </div>
+
 
     <div class="cursor-pointer">
 

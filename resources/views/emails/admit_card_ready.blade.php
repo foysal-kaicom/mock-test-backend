@@ -15,7 +15,7 @@
           <tr>
             <td style="padding:20px 24px;background:#0b74de;color:#ffffff;">
               <!-- If you have a logo, swap the text below with an <img> -->
-              <h1 style="margin:0;font-size:20px;font-weight:600;">JPT BD</h1>
+              <h1 style="margin:0;font-size:20px;font-weight:600;">Mock Test</h1>
             </td>
           </tr>
 
@@ -66,7 +66,7 @@
             <td style="padding:18px 24px;background:#f1f5f8;color:#6b7b87;font-size:13px;">
               <p style="margin:0;">
                 Best regards,<br>
-                <strong>JPTBD Exam Team</strong>
+                <strong>Mock Exam Team</strong>
               </p>
               <p style="margin:8px 0 0;font-size:12px;color:#98a3ac;">
                 This is an automated message — please do not reply to this email.

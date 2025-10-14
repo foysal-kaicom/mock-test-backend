@@ -82,7 +82,7 @@
         <!-- Email Body -->
         <div class="email-body">
             <p>Dear {{ $candidateName }},</p>
-            <p>We are happy to inform you that your payment for the JPT certificate claim has been approved.</p>
+            <p>We are happy to inform you that your payment for the Mock Test certificate claim has been approved.</p>
             <div style="font-size: 13px">
                 <p>Thank you for your patience throughout the process.</p>
 
@@ -94,7 +94,7 @@
         <!-- Email Footer -->
         <div class="email-footer">
             <p>Best regards,</p>
-            <p>The JPTBD Team</p>
+            <p>The Mock Test Team</p>
         </div>
     </div>
 </body>

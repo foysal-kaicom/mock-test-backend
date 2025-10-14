@@ -60,7 +60,7 @@
 <body>
     <div class="container">
         <div style="text-align: center; margin-bottom: 30px;">
-            <img src="{{ url('logo/logo.png') }}" alt="JPT Logo" style="max-height: 60px;">
+            <img src="{{ url('logo/logo.png') }}" alt="Mock Test Logo" style="max-height: 60px;">
         </div>
 
         <h2>Welcome, {{ $candidate->full_name }}!</h2>

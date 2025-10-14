@@ -16,7 +16,7 @@
         <table class="table table-striped table-hover border align-middle">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    {{-- <th>ID</th> --}}
                     <th>Exam Name</th>
                     <th>Slug</th>
                     <th>Module Name</th>
@@ -28,7 +28,7 @@
             <tbody>
                 @foreach($modules as $module)
                 <tr>
-                    <td>{{ $module->id }}</td>
+                    {{-- <td>{{ $module->id }}</td> --}}
                     <td>{{ $module->exam?->title ?? '-' }}</td>
                     <td>{{ $module->slug }}</td>
                     <td>{{ $module->name }}</td>

@@ -32,7 +32,7 @@ class CertificateClaimUpdatedMail extends Mailable
     public function build()
     {
         return $this->view('emails.certificate_claim_payment')
-                    ->subject('JPT certificate payment approved')
+                    ->subject('Mock Test Certificate Payment Approved')
                     ->with([
                         'data' => $this->data,
                         'candidateName' => $this->candidateName

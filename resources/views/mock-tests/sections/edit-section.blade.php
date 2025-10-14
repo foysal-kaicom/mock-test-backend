@@ -17,8 +17,44 @@
     <form action="{{ route('mock-tests.section.update', $section->id) }}" method="POST">
         @csrf
 
+        <!-- Mock Test Selection -->
         <div class="row g-4">
-            <!-- Section Title -->
+            <div class="col-md-12">
+                <label class="form-label fw-semibold">Select Mock Test Modules</label>
+                <select name="mock_test_module_id" class="form-select form-select-lg shadow-sm rounded-2" required>
+                    <option value="" disabled>Select a Modules</option>
+                    @foreach($modules as $mockTestModule)
+                        <option value="{{ $mockTestModule->id }}" {{ old('mock_test_module_id', $section->mock_test_module_id) == $mockTestModule->id ? 'selected' : '' }}>
+                            {{ $mockTestModule->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('mock_test_module_id')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+
+        {{-- <!-- Mock Test Selection -->
+        <div class="row g-4">
+            <div class="col-md-12">
+                <label class="form-label fw-semibold">Select Mock Test Modules</label>
+                <select name="mock_test_module_id" class="form-select form-select-lg shadow-sm rounded-2" required>
+                    <option value="" disabled>Select a Modules</option>
+                    @foreach($modules as $mockTestModule)
+                        <option value="{{ $mockTestModule->id }}" {{ old('mock_test_module_id', $section->mock_test_module_id) == $mockTestModule->id ? 'selected' : '' }}>
+                            {{ $mockTestModule->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('mock_test_module_id')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div> --}}
+
+        <!-- Section Title -->
+        <div class="row g-4">
             <div class="col-md-12">
                 <label class="form-label fw-semibold">Section Title</label>
                 <input
@@ -28,6 +64,22 @@
                     class="form-control form-control-lg shadow-sm rounded-2"
                     placeholder="e.g. Photo description" />
                 @error('title')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Section Slug -->
+        <div class="row g-4 pt-4">
+            <div class="col-md-12">
+                <label class="form-label fw-semibold">Section Slug</label>
+                <input
+                    type="text"
+                    name="slug"
+                    value="{{ old('slug', $section->slug) }}"
+                    class="form-control form-control-lg shadow-sm rounded-2"
+                    placeholder="e.g. photo-description" />
+                @error('slug')
                 <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
@@ -104,5 +156,13 @@ tinymce.init({
 });
 
 
+</script>
+<script>
+    //create slug from title
+    document.querySelector('input[name="title"]').addEventListener('input', function() {
+        const slugInput = document.querySelector('input[name="slug"]');
+        const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '');
+        slugInput.value = slug;
+    });
 </script>
 @endpush

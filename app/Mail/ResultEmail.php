@@ -42,7 +42,7 @@ class ResultEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Congratulations!🎉 Your JPT exam result is published.')
+        return $this->subject('Congratulations!🎉 Your Mock test exam result is published.')
                     ->view('emails.result')
                     ->with([
                         'candidate' => $this->candidate,

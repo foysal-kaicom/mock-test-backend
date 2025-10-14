@@ -2,7 +2,7 @@
 
 @section('contents')
 
-<section class="w-100 bg-white rounded overflow-hidden mb-4" style="font-family: sans-serif;">
+{{-- <section class="w-100 bg-white rounded overflow-hidden mb-4" style="font-family: sans-serif;">
     <!-- Section Header -->
     <div class="p-2 px-4 d-flex justify-content-between align-items-center bg-indigo-300">
         <h3 class="text-lg font-semibold">Filters</h3>
@@ -57,7 +57,7 @@
             </div>
         </div>
     </form>
-</section>
+</section> --}}
 
 <section class="w-100 bg-white rounded overflow-hidden" style="font-family: sans-serif;">
     <div class="py-3 px-4 d-flex justify-content-between align-items-center bg-indigo-300">
@@ -74,17 +74,24 @@
         <table class="table table-striped table-hover border align-middle">
             <thead class="">
                 <tr>
-                    <th scope="col" class="text-uppercase text-secondary small px-4 py-3">
+                    {{-- <th scope="col" class="text-uppercase text-secondary small px-4 py-3">
                         <a href="{{ route('exam.list', ['order_by' => 'id', 'direction' => (request()->direction == 'asc' ? 'desc' : 'asc')]) }}" class="text-primary hover-effect">
                             ID
                         </a>
+                    </th> --}}
+                    <th scope="col" class="d-none d-sm-table-cell text-secondary small px-4 py-3">
+                        <a href="{{ route('exam.list', ['order_by' => 'title', 'direction' => (request()->direction == 'asc' ? 'desc' : 'asc')]) }}" class="text-primary hover-effect">
+                            Short Name
+                        </a>
                     </th>
+
                     <th scope="col" class="d-none d-sm-table-cell text-secondary small px-4 py-3">
                         <a href="{{ route('exam.list', ['order_by' => 'title', 'direction' => (request()->direction == 'asc' ? 'desc' : 'asc')]) }}" class="text-primary hover-effect">
                             Title
                         </a>
                     </th>
-                    <th scope="col" class="d-none d-md-table-cell text-secondary small py-3">
+
+                    {{-- <th scope="col" class="d-none d-md-table-cell text-secondary small py-3">
                         <a href="{{ route('exam.list', ['order_by' => 'exam_date', 'direction' => (request()->direction == 'asc' ? 'desc' : 'asc')]) }}" class="text-primary hover-effect">
                             Exam Date
                         </a>
@@ -103,7 +110,7 @@
                         <a href="{{ route('exam.list', ['order_by' => 'result_publish_date', 'direction' => (request()->direction == 'asc' ? 'desc' : 'asc')]) }}" class="text-primary hover-effect">
                             Result Date
                         </a>
-                    </th>
+                    </th> --}}
                     <th scope="col" class="d-none d-md-table-cell text-secondary small py-3">Created By</th>
                     <th scope="col" class="d-none d-md-table-cell text-secondary small py-3">Status</th>
                     <th scope="col" class="d-none d-md-table-cell text-secondary small py-3">Action</th>
@@ -113,14 +120,13 @@
             <tbody>
                 @foreach($exams as $exam)
                 <tr>
-                    <td class="px-4 py-1">{{ $exam->id }}</td>
-                    <td class="d-none d-sm-table-cell px-4 py-1">
-                        {{ $exam->title }}
-                    </td>
-                    <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->exam_date }}</td>
-                    <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->application_deadline }}</td>
+                    {{-- <td class="px-4 py-1">{{ $exam->id }}</td> --}}
+                     <td class="d-none d-sm-table-cell px-4 py-1"> {{ $exam->name }} </td>
+                    <td class="d-none d-sm-table-cell px-4 py-1"> {{ $exam->title }} </td>
+                    {{-- <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->exam_date }}</td> --}}
+                    {{-- <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->application_deadline }}</td>
                     <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->fee }}</td>
-                    <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->result_publish_date }}</td>
+                    <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->result_publish_date }}</td> --}}
                     <td class="d-none d-sm-table-cell py-1 text-nowrap">{{ $exam->creator->name }}</td>
 
                     <td class="d-none d-sm-table-cell py-1">

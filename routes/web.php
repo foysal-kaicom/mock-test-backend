@@ -91,10 +91,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/module-info', [MockTestController::class, 'index'])->name('module-section.info');
         Route::get('/question-setup-form', [MockTestController::class, 'questionSetupForm'])->name('question-setup.form');
         Route::post('/question-setup', [MockTestController::class, 'questionSetup'])->name('question-setup.post');
+
+        Route::get('/section-create', [MockTestController::class, 'createSection'])->name('section.create');
+        Route::post('/section-store', [MockTestController::class, 'storeSection'])->name('section.store');
+
+
         Route::get('/section-edit/{id}', [MockTestController::class, 'editSection'])->name('section.edit');
         Route::post('/section-update/{id}', [MockTestController::class, 'updateSection'])->name('section.update');
         Route::get('/edit-question/{id}', [MockTestController::class, 'editQuestion'])->name('edit.question');
         Route::post('/update-question/{id}', [MockTestController::class, 'updateQuestion'])->name('question.update');
+        Route::post('/update-question-group/{id}', [MockTestController::class, 'updateQuestionGroup'])->name('question-group.update');
+
         Route::delete('/delete-question/{id}', [MockTestController::class, 'deleteQuestion'])->name('question.delete');
 
         Route::get('/reports/list', [MockTestController::class, 'getReportsData'])->name('reports.list');

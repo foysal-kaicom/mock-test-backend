@@ -33,7 +33,7 @@ class MockTestController extends Controller
     {
         $modules = MockTestModule::with('sections')->get();
 
-        return view('mock-tests.module_section_list', compact('modules'));
+        return view('mock-tests.sections.module_section_list', compact('modules'));
     }
 
     public function questionList(Request $request)
@@ -50,8 +50,6 @@ class MockTestController extends Controller
     
         return view('mock-tests.question-list', compact('questions', 'sections'));
     }
-    
-
 
     public function questionSetupForm()
     {
@@ -61,22 +59,53 @@ class MockTestController extends Controller
         return view('mock-tests.question-setup', compact('mockTestSections'));
     }
 
+    public function createSection()
+    {
+        $modules = MockTestModule::all();
+        return view('mock-tests.sections.create-section', compact('modules'));
+    }
+
+    public function storeSection(Request $request)
+    {
+        $request->validate([
+            'mock_test_module_id' => 'required|exists:mock_test_modules,id',
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:mock_test_sections,slug',
+            'sample_question' => 'required|string',
+        ]);
+
+        MockTestSection::create([
+            'mock_test_module_id' => $request->input('mock_test_module_id'),
+            'title' => $request->input('title'),
+            'slug' => $request->input('slug'),
+            'sample_question' => $request->input('sample_question'),
+        ]);
+
+        Toastr::success("Section created successfully.");
+        return redirect()->route('mock-tests.module-section.info');
+    }
+
     public function editSection($id){
+        $modules = MockTestModule::all();
         $section = MockTestSection::findOrFail($id);
-        return view('mock-tests.edit-section', compact('section'));
+        return view('mock-tests.sections.edit-section', compact('section','modules'));
     }
 
     public function updateSection(Request $request, $id)
     {
         $request->validate([
+            'mock_test_module_id' => 'required|exists:mock_test_modules,id',
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:mock_test_sections,slug,'.$id,
             'sample_question' => 'required|string',
         ]);
 
         $section = MockTestSection::findOrFail($id);
 
         $section->update([
+            'mock_test_module_id' => $request->input('mock_test_module_id'),
             'title' => $request->input('title'),
+            'slug' => $request->input('slug'),
             'sample_question' => $request->input('sample_question'),
         ]);
 
@@ -84,10 +113,8 @@ class MockTestController extends Controller
         return redirect()->route('mock-tests.module-section.info');
     }
 
-
     public function questionSetup(StoreMockTestRequest $request)
     {
-               
         if ($request->group_by == 'audio') {
             //upload audio file to bucket and get the path
 
@@ -130,7 +157,7 @@ class MockTestController extends Controller
                 // Create Question
                 $question = MockTestQuestion::create([
                     'title' => $textOrImage,
-                    'mock_test_section_id' => $request->section_id,
+                    // 'mock_test_section_id' => $request->section_id,
                     'proficiency_level' => strtoupper($q['proficiency_level']),
                     'mock_test_section_id' => $request->section_id,
                     'mock_test_question_group_id' => $questionGroup->id ?? null,
@@ -275,81 +302,60 @@ class MockTestController extends Controller
         }
     }
 
-    // public function getReportsData(Request $request)
-    // {
-    //     $candidates = Candidate::all();
-    //     $exams = Exam::all();
+    public function getReportsData(Request $request)
+    {
+        $candidates = Candidate::all();
+        $exams = Exam::all();
 
-    //     $query = MockTestRecords::with('candidate', 'exam');
+        // Check if this is an AJAX request from DataTables
+        if ($request->ajax()) {
+            $query = MockTestRecords::with(['candidate', 'exam']);
 
-    //     if ($request->candidate_id) {
-    //         $query->where('candidate_id', $request->candidate_id);
-    //     }
+            if ($request->candidate_id) {
+                $query->where('candidate_id', $request->candidate_id);
+            }
 
-    //     if ($request->exam_id) {
-    //         $query->where('exam_id', $request->exam_id);
-    //     }
+            if ($request->exam_id) {
+                $query->where('exam_id', $request->exam_id);
+            }
 
-    //     $records = $query->orderBy('created_at', 'desc')->get();
+            if ($request->date_range) {
+                [$start, $end] = explode(' - ', $request->date_range);
+                $query->whereBetween('created_at', [
+                    Carbon::parse($start)->startOfDay(),
+                    Carbon::parse($end)->endOfDay(),
+                ]);
+            }
 
-    //     return view('mock-tests.reports.list', compact('records', 'candidates', 'exams'));
-    // }
+            $records = $query->orderBy('created_at', 'desc')->get();
 
-
-public function getReportsData(Request $request)
-{
-    $candidates = Candidate::all();
-    $exams = Exam::all();
-
-    // Check if this is an AJAX request from DataTables
-    if ($request->ajax()) {
-        $query = MockTestRecords::with(['candidate', 'exam']);
-
-        if ($request->candidate_id) {
-            $query->where('candidate_id', $request->candidate_id);
+            return datatables()->of($records)
+                ->addColumn('candidate', fn($row) => $row->candidate->full_name ?? '-')
+                ->addColumn('exam', fn($row) => $row->exam->title ?? '-')
+                ->addColumn('results', function($record) {
+                    $details = MockTestRecordDetails::with('module')
+                        ->where('mock_test_record_id', $record->id)
+                        ->get();
+                    $modules = [];
+                    foreach ($details as $detail) {
+                        $moduleName = $detail->module->name ?? 'Unknown';
+                        if (!isset($modules[$moduleName])) $modules[$moduleName] = 0;
+                        if ($detail->is_correct) $modules[$moduleName]++;
+                    }
+                    $html = '';
+                    foreach ($modules as $module => $count) {
+                        $html .= "<div><strong>{$module}:</strong> {$count}</div>";
+                    }
+                    return $html ?: '-';
+                })
+                ->addColumn('date', fn($row) => $row->created_at->format('j, M Y'))
+                ->addColumn('question_set', fn($row) => $row->question_set)
+                ->rawColumns(['results'])
+                ->make(true);
         }
 
-        if ($request->exam_id) {
-            $query->where('exam_id', $request->exam_id);
-        }
-
-        if ($request->date_range) {
-            [$start, $end] = explode(' - ', $request->date_range);
-            $query->whereBetween('created_at', [
-                Carbon::parse($start)->startOfDay(),
-                Carbon::parse($end)->endOfDay(),
-            ]);
-        }
-
-        $records = $query->orderBy('created_at', 'desc')->get();
-
-        return datatables()->of($records)
-            ->addColumn('candidate', fn($row) => $row->candidate->full_name ?? '-')
-            ->addColumn('exam', fn($row) => $row->exam->title ?? '-')
-            ->addColumn('results', function($record) {
-                $details = MockTestRecordDetails::with('module')
-                    ->where('mock_test_record_id', $record->id)
-                    ->get();
-                $modules = [];
-                foreach ($details as $detail) {
-                    $moduleName = $detail->module->name ?? 'Unknown';
-                    if (!isset($modules[$moduleName])) $modules[$moduleName] = 0;
-                    if ($detail->is_correct) $modules[$moduleName]++;
-                }
-                $html = '';
-                foreach ($modules as $module => $count) {
-                    $html .= "<div><strong>{$module}:</strong> {$count}</div>";
-                }
-                return $html ?: '-';
-            })
-            ->addColumn('date', fn($row) => $row->created_at->format('j, M Y'))
-            ->addColumn('question_set', fn($row) => $row->question_set)
-            ->rawColumns(['results'])
-            ->make(true);
+        return view('mock-tests.reports.list', compact('candidates', 'exams'));
     }
-
-    return view('mock-tests.reports.list', compact('candidates', 'exams'));
-}
 
 
     

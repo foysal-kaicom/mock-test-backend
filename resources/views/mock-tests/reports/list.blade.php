@@ -39,7 +39,7 @@
                     <th>Date</th>
                     <th>Candidate</th>
                     <th>Exam</th>
-                    <th>Question Set</th>
+                    {{-- <th>Question Set</th> --}}
                     <th>Results</th>
                 </tr>
             </thead>
@@ -126,7 +126,7 @@
                     { data: 'date', name: 'date' },
                     { data: 'candidate', name: 'candidate' },
                     { data: 'exam', name: 'exam' },
-                    { data: 'question_set', name: 'question_set' },
+                    // { data: 'question_set', name: 'question_set' },
                     { data: 'results', name: 'results', orderable: false, searchable: false }
                 ],
                 order: [[0, 'desc']],

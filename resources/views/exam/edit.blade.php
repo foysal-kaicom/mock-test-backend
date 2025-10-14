@@ -9,6 +9,16 @@
             </svg> Edit Exam</h3>
     </div>
 
+    @if ($errors->any())
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- Form -->
     <form action="{{ $isCopy ? route('exam.store') : route('exam.update', $exam->id) }}" 
           method="POST" enctype="multipart/form-data" class="p-4">
@@ -54,58 +64,17 @@
                         @error('title') <div class="text-danger small">{{ $message }}</div> @enderror
                     </div>
 
-                    <!-- Exam Date -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Exam Date</label>
-                        <input type="date" name="exam_date" 
-                               value="{{ old('exam_date', \Carbon\Carbon::parse($exam->exam_date)->format('Y-m-d')) }}" 
-                               class="form-control form-control-lg shadow-sm rounded-2" />
-                        @error('exam_date') <div class="text-danger small">{{ $message }}</div> @enderror
+                    <!-- status -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status" class="form-control form-control-lg shadow-sm rounded-2">
+                            <option value="1" {{ $exam->status ? 'selected' : '' }}>Active</option>
+                            <option value="0" {{ !$exam->status ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                        @error('status') <div class="text-danger small">{{ $message }}</div> @enderror
                     </div>
 
-                    <!-- Deadline -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Deadline</label>
-                        <input type="date" name="application_deadline" 
-                               value="{{ old('application_deadline', \Carbon\Carbon::parse($exam->application_deadline)->format('Y-m-d')) }}" 
-                               class="form-control form-control-lg shadow-sm rounded-2" />
-                        @error('application_deadline') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
 
-                    <!-- Fee -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Fee</label>
-                        <input type="number" name="fee" value="{{ old('fee', $exam->fee) }}" 
-                               class="form-control form-control-lg shadow-sm rounded-2" placeholder="e.g. 100" />
-                        @error('fee') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Result Publish Date -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Result Publish Date</label>
-                        <input type="date" name="result_publish_date" 
-                               value="{{ old('result_publish_date', \Carbon\Carbon::parse($exam->result_publish_date)->format('Y-m-d')) }}" 
-                               class="form-control form-control-lg shadow-sm rounded-2" />
-                        @error('result_publish_date') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Start Time -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Start Time</label>
-                        <input type="time" name="start_time" 
-                               value="{{ old('start_time', \Carbon\Carbon::parse($exam->start_time)->format('H:i')) }}" 
-                               class="form-control form-control-lg shadow-sm rounded-2" />
-                        @error('start_time') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- End Time -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">End Time</label>
-                        <input type="time" name="end_time" 
-                               value="{{ old('end_time', \Carbon\Carbon::parse($exam->end_time)->format('H:i')) }}" 
-                               class="form-control form-control-lg shadow-sm rounded-2" />
-                        @error('end_time') <div class="text-danger small">{{ $message }}</div> @enderror
-                    </div>
 
                     <!-- Description -->
                     <div class="col-md-12">

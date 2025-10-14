@@ -103,40 +103,6 @@ class PackageController extends Controller
     }
 
     // API to get package details
-    // public function show()
-    // {
-    //     $packages = Package::with(['package_details.exam'])->where('status', 1)->orderBy('order', 'asc')->get()->map(function($package) {
-    //         return [
-    //             'id' => $package->id,
-    //             'name' => $package->name,
-    //             'price' => $package->price,
-    //             'short_description' => $package->short_description,
-    //             'description' => $package->description,
-    //             'status' => $package->status,
-    //             'is_popular' => $package->is_popular,
-    //             'is_home' => $package->is_home,
-    //             'sequence' => $package->order,
-    //             'package_details' => PackageDetailResource::collection($package->package_details),
-    //         ];
-    //     });
-
-    //     return $this->responseWithSuccess($packages, 'Packages retrieved successfully');
-    // }
-
-    // Buy package
-    // public function buy(Package $package)
-    // {
-    //     foreach ($package->package_details as $detail) {
-    //         UserSubscription::create([
-    //             'user_id'            => Auth::id(),
-    //             'package_details_id' => $detail->id,
-    //             'count'              => 0,
-    //         ]);
-    //     }
-    //     return redirect()->back()->with('success', 'Package purchased successfully');
-    // }
-
-
 
 
     public function show(Request $request)
@@ -159,7 +125,7 @@ class PackageController extends Controller
                 return [
                     'id' => $package->id,
                     'name' => $package->name,
-                    'price' => $package->price,
+                    'price' => $package->is_free ? 'FREE' : 'BDT ' . (int)$package->price,
                     'short_description' => $package->short_description,
                     'description' => $package->description,
                     'status' => $package->status,
@@ -452,79 +418,79 @@ class PackageController extends Controller
 
     //     return response()->json($sslController->payNow($userSubscription));
     // }
-public function renewSubscription(Request $request, SslCommerzPaymentController $sslController)
-{
-    $request->validate([
-        'user_subscription_id' => 'required|exists:user_subscriptions,id',
-        'confirm'             => 'nullable|boolean', // optional confirm flag
-    ]);
-
-    $candidate = Auth::guard('candidate')->user();
-    if (!$candidate) {
-        return $this->responseWithError('Unauthorized', 'Please log in to renew your package', 401);
-    }
-
-    // Get the existing subscription along with its package and details
-    $existingSubscription = UserSubscription::with('subscriptionDetails.exam', 'package')
-        ->where('candidate_id', $candidate->id)
-        ->where('id', $request->user_subscription_id)
-        ->where('payment_status', 'success')
-        ->first();
-
-    if (!$existingSubscription) {
-        return $this->responseWithError('No Active Subscription', 'You don’t have any active subscription to renew.', 400);
-    }
-
-    $package = $existingSubscription->package;
-
-    if (!$package) {
-        return $this->responseWithError('Package Not Found', 'The linked package does not exist.', 404);
-    }
-
-    // Check remaining exam attempts
-    $details = $existingSubscription->subscriptionDetails->map(function ($detail) {
-        $remaining = max($detail->max_exam_attempt - $detail->used_exam_attempt, 0);
-        return [
-            'exam_title' => $detail->exam->title ?? 'Unknown',
-            'max_attempts' => $detail->max_exam_attempt,
-            'used_attempts' => $detail->used_exam_attempt,
-            'remaining_attempts' => $remaining,
-        ];
-    });
-
-    $remainingTotal = $details->sum('remaining_attempts');
-
-    // If user has remaining attempts and did not confirm yet, return awareness message
-    if ($remainingTotal > 0 && !$request->confirm) {
-        return response()->json([
-            'status' => 'awareness',
-            'message' => "You still have {$remainingTotal} remaining exam attempt(s). Renewing will reset your attempts.",
-            'exam_summary' => $details,
+    public function renewSubscription(Request $request, SslCommerzPaymentController $sslController)
+    {
+        $request->validate([
+            'user_subscription_id' => 'required|exists:user_subscriptions,id',
+            'confirm'             => 'nullable|boolean', // optional confirm flag
         ]);
+
+        $candidate = Auth::guard('candidate')->user();
+        if (!$candidate) {
+            return $this->responseWithError('Unauthorized', 'Please log in to renew your package', 401);
+        }
+
+        // Get the existing subscription along with its package and details
+        $existingSubscription = UserSubscription::with('subscriptionDetails.exam', 'package')
+            ->where('candidate_id', $candidate->id)
+            ->where('id', $request->user_subscription_id)
+            ->where('payment_status', 'success')
+            ->first();
+
+        if (!$existingSubscription) {
+            return $this->responseWithError('No Active Subscription', 'You don’t have any active subscription to renew.', 400);
+        }
+
+        $package = $existingSubscription->package;
+
+        if (!$package) {
+            return $this->responseWithError('Package Not Found', 'The linked package does not exist.', 404);
+        }
+
+        // Check remaining exam attempts
+        $details = $existingSubscription->subscriptionDetails->map(function ($detail) {
+            $remaining = max($detail->max_exam_attempt - $detail->used_exam_attempt, 0);
+            return [
+                'exam_title' => $detail->exam->title ?? 'Unknown',
+                'max_attempts' => $detail->max_exam_attempt,
+                'used_attempts' => $detail->used_exam_attempt,
+                'remaining_attempts' => $remaining,
+            ];
+        });
+
+        $remainingTotal = $details->sum('remaining_attempts');
+
+        // If user has remaining attempts and did not confirm yet, return awareness message
+        if ($remainingTotal > 0 && !$request->confirm) {
+            return response()->json([
+                'status' => 'awareness',
+                'message' => "You still have {$remainingTotal} remaining exam attempt(s). Renewing will reset your attempts.",
+                'exam_summary' => $details,
+            ]);
+        }
+
+        // Generate new transaction ID for renewal
+        $tranId = strtoupper(substr($package->name, 0, 3)) . $package->id . str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // $tranId = strtoupper(substr($package->name, 0, 3)) . $package->id . str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Create a new pending subscription for renewal
+        $userSubscription = UserSubscription::create([
+            'candidate_id'   => $candidate->id,
+            'package_id'     => $package->id,
+            'tran_id'        => $tranId,
+            'status'         => 'pending',
+            'payment_status' => 'pending',
+            'total_payable'  => $package->price,
+            'title'          => 'renewal',
+        ]);
+
+        // Trigger SSL payment
+        $paymentResponse = $sslController->payNow($userSubscription);
+        return response()->json($paymentResponse);
+
+        // return response()->json($sslController->payNow($userSubscription));
     }
-
-    // Generate new transaction ID for renewal
-    $tranId = strtoupper(substr($package->name, 0, 3)) . $package->id . str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
-    // $tranId = strtoupper(substr($package->name, 0, 3)) . $package->id . str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
-    // Create a new pending subscription for renewal
-    $userSubscription = UserSubscription::create([
-        'candidate_id'   => $candidate->id,
-        'package_id'     => $package->id,
-        'tran_id'        => $tranId,
-        'status'         => 'pending',
-        'payment_status' => 'pending',
-        'total_payable'  => $package->price,
-        'title'          => 'renewal',
-    ]);
-
-    // Trigger SSL payment
-    $paymentResponse = $sslController->payNow($userSubscription);
-    return response()->json($paymentResponse);
-
-    // return response()->json($sslController->payNow($userSubscription));
-}
 
 
 

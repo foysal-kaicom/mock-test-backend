@@ -66,7 +66,7 @@ class SslCommerzPaymentController extends Controller
         $post_data['ship_country'] = "Bangladesh";
 
         $post_data['shipping_method'] = "NO";
-        $post_data['product_name'] = 'JPT Exam Registration';
+        $post_data['product_name'] = 'Mock Test Exam Registration';
         $post_data['product_category'] = "Booking";
         $post_data['product_profile'] = "Digital Product";
 

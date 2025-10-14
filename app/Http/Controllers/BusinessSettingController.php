@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateBusinessSettingsRequest;
+use Illuminate\Http\Request;
 use App\Models\BusinessSetting;
 use Brian2694\Toastr\Facades\Toastr;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdateBusinessSettingsRequest;
 
 class BusinessSettingController extends Controller
 {
@@ -17,19 +18,43 @@ class BusinessSettingController extends Controller
     /**
     * Basic Info
     */
+    // public function updateGeneralInfo(UpdateBusinessSettingsRequest $request)
+    // {
+    //     $setting = BusinessSetting::find(1);
+    //     $data = $request->validated();
+
+    //     if ($request->hasFile('logo')) {
+    //         if ($setting->logo && file_exists(public_path($setting->logo))) {
+    //             unlink(public_path($setting->logo));
+    //         }
+
+    //         $photoName = time() . '_' . $request->file('logo')->getClientOriginalName();
+    //         $request->file('logo')->move(public_path('business-settings/logos'), $photoName);
+    //         $data['logo'] = 'business-settings/logos/' . $photoName;
+    //     }
+
+    //     $setting->update($data);
+
+    //     Toastr::success('Basic Information updated.');
+    //     return redirect()->route('business-settings.edit', 1);
+    // }
+
     public function updateGeneralInfo(UpdateBusinessSettingsRequest $request)
     {
         $setting = BusinessSetting::find(1);
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            if ($setting->logo && file_exists(public_path($setting->logo))) {
-                unlink(public_path($setting->logo));
+            // Delete old logo if exists
+            if ($setting->logo && Storage::disk('public')->exists($setting->logo)) {
+                Storage::disk('public')->delete($setting->logo);
             }
 
-            $photoName = time() . '_' . $request->file('logo')->getClientOriginalName();
-            $request->file('logo')->move(public_path('business-settings/logos'), $photoName);
-            $data['logo'] = 'business-settings/logos/' . $photoName;
+            // Store new logo in 'public/business-settings/logos'
+            $path = $request->file('logo')->store('business-settings/logos', 'public');
+
+            // Save only the relative path
+            $data['logo'] = $path;
         }
 
         $setting->update($data);
@@ -37,6 +62,7 @@ class BusinessSettingController extends Controller
         Toastr::success('Basic Information updated.');
         return redirect()->route('business-settings.edit', 1);
     }
+
 
     /**
     * Legal Info

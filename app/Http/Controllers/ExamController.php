@@ -18,7 +18,12 @@ class ExamController extends Controller
         $direction = $request->direction ?? 'asc';
 
         $query = Exam::with('creator:id,name')
-            ->select('id', 'title', 'exam_date', 'application_deadline', 'result_publish_date', 'fee', 'created_by', 'status');
+            ->select('id', 'title', 'name',
+            // 'exam_date', 
+            // 'application_deadline', 
+            // 'result_publish_date', 
+            // 'fee', 
+            'created_by', 'status');
         
         if ($request->has('title') && $request->title != '') {
             $query->where('title', 'like', '%'. $request->title . '%');
@@ -52,7 +57,7 @@ class ExamController extends Controller
         }
 
         $data['created_by'] = Auth::id();
-        $data['slug'] = rand(1,99999).'-'.Str::of($data['title'])->slug('-');
+        // $data['slug'] = rand(1,99999).'-'.Str::of($data['title'])->slug('-');
 
         Exam::create($data);
 
@@ -81,7 +86,7 @@ class ExamController extends Controller
             $data['image'] = 'exam_images/' . $imageName;
         }
 
-        $data['slug'] = Str::of($data['title'])->slug('-');
+        // $data['slug'] = Str::of($data['title'])->slug('-');
 
         $exam->update($data);
 
